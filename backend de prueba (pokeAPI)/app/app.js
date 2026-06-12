@@ -1,6 +1,6 @@
 import express from "express";
-import { endpointsPokemons } from "./app/api/pokemons.js";
-import { endpointsTipos } from "./app/api/tipos.js";
+import { endpointsPokemons } from "./api/pokemons.js";
+import { endpointsTipos } from "./api/tipos.js";
 
 const app = express();
 const port = 3000;
