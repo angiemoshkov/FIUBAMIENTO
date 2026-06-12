@@ -1,0 +1,12 @@
+CREATE TABLE tipos (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE pokemones (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) UNIQUE NOT NULL,
+    evolucion INT NOT NULL,
+    tipo INT NOT NULL REFERENCES tipos(id),
+    rareza INT NOT NULL DEFAULT 0
+);
