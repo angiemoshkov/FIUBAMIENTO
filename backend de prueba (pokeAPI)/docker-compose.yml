@@ -1,7 +1,7 @@
 services:
   pokeapi:
     build: . #builder el dockerfile de esta carpeta
-    image: backend:v1 #ponele "backend" de nombre a la img
+    image: fiubamiento_backend:v1 
     ports:
       - "3000:3000"
     depends_on:
@@ -12,18 +12,17 @@ services:
       DB_PORT: "5432",
       DB_USER: postgres,
       DB_PASSWORD: post,
-      DB_NAME: pokemones
+      DB_NAME: FIUBAMIENTO
   
   db:
-    image: postgres:17
+    image: postgres:17-alpine
+    container_name: fiubamiento_db
     environment:
      POSTGRES_USER: "postgres",
      POSTGRES_PASSWORD: "post",
-     POSTGRES_DB: pokemones
+     POSTGRES_DB: FIUBAMIENTO
     ports:
       - "5433:5432"
     volumes:
       - ./data:/var/lib/postgresql/data
-      # en produccion, no deberia cargar las seeds en el volumen (si los schemas), pero en dev si
-      # idem con el 'ports de db'
 
