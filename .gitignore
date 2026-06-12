@@ -1,0 +1,11 @@
+# Entornos virtuales y dependencias
+node_modules/
+__pycache__/
+.venv/
+
+# Archivos de configuración del sistema o editores
+.DS_Store
+.vscode/
+
+# Archivos con contraseñas o datos sensibles (¡Muy importante!)
+.env
