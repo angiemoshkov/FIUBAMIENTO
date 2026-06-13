@@ -1,5 +1,19 @@
-import { db } from "./pool.js";
+import { db } from "../db/pool.js";
 
+//---CRUD completo, respetando el orden de las siglas"---//
+
+//CREATE
+export async function createSpot(latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) {
+  const res = await db.query(
+    `INSERT INTO spots (latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) 
+    VALUES ($1, $2, $3, $4, $5)`,
+    [latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion],
+  );
+
+  return res.rowCount == 1;
+}
+
+//READ
 export async function getAllSpots() {
   const res = await db.query(
     "SELECT s.id, s.latitud, s.longitud, s.direccion_aproximada, s.estado_actual, s.ultima_actualizacion FROM spots s",
@@ -16,12 +30,7 @@ export async function getSpot(id) {
   return res.rows[0];
 }
 
-export async function removeSpot(id) {
-  const res = await db.query("DELETE FROM spots WHERE id = $1", [id]);
-
-  return res.rowCount == 1;
-}
-
+//UPDATE
 export async function updateSpot(id, latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) {
   const res = await db.query(
     `UPDATE spots SET latitud=$1, longitud=$2, direccion_aproximada=$3, estado_actual=$4, ultima_actualizacion=$5 WHERE id = $6`,
@@ -31,12 +40,12 @@ export async function updateSpot(id, latitud, longitud, direccion_aproximada, es
   return res.rowCount == 1;
 }
 
-export async function createSpot(latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) {
-  const res = await db.query(
-    `INSERT INTO spots (latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) 
-    VALUES ($1, $2, $3, $4, $5)`,
-    [latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion],
-  );
+//DELETE
+export async function removeSpot(id) {
+  const res = await db.query("DELETE FROM spots WHERE id = $1", [id]);
 
   return res.rowCount == 1;
 }
+
+
+
