@@ -69,6 +69,7 @@ FIUBAMIENTO/
 ├── frontend/
 ├── .gitignore
 └── README.md
+```
 
 ---
 
@@ -140,7 +141,7 @@ La base de datos se inicializa automáticamente con el schema y los datos de pru
 Cada spot devuelve un campo `estado_actual` calculado en el backend según estas reglas, en orden de prioridad:
 
 1. `restringido` — hay una restricción horaria activa en este momento.
-2. `sin_info` — el último reporte existe pero ya expiró.
+2. `sin_info_reciente` — el último reporte existe pero ya expiró.
 3. `sin_reportes` — nunca se reportó nada para ese lugar.
 4. `libre` / `ocupado` — el reporte más reciente es válido.
 
