@@ -40,23 +40,35 @@ Antes de manejar hasta la zona, cualquier persona puede consultar el mapa y ver 
 
 ## 📁 Estructura del proyecto
 
-> ⚠️ El backend todavía vive dentro de `backend de prueba (pokeAPI)/`, que arrancó como una maqueta siguiendo el ejemplo de la cátedra (con entidades de Pokémon). Se está migrando gradualmente a las entidades reales de FIUBAMIENTO (`spots`, `reportes`, `restricciones`) y se va a renombrar más adelante.
+> ⚠️ Se está migrando gradualmente a las entidades reales de FIUBAMIENTO (`spots`, `reportes`, `restricciones`). 
 
 ```
 FIUBAMIENTO/
-├── backend de prueba (pokeAPI)/   # Backend (Node.js + Express + Postgres) — en migración
+├── backend/
 │   ├── app/
 │   │   ├── api/
+│   │   │   ├── reportes.js
+│   │   │   ├── restricciones.js
+│   │   │   └── spots.js
+│   │   ├── db/
+│   │   │   ├── pool.js
+│   │   │   ├── reportes.js
+│   │   │   ├── restricciones.js
+│   │   │   └── spots.js
+│   │   ├── node_modules/
+│   │   ├── .gitignore
 │   │   ├── app.js
-│   │   └── package.json
+│   │   ├── package-lock.json
+│   │   ├── package.json
 │   ├── data/
-│   │   ├── 0001_schemas.sql
-│   │   └── 02_seeds.sql
-│   ├── Dockerfile
-│   └── docker-compose.yml
-├── frontend/                      # (por agregar)
+│   │   │   ├── 01_schemas.sql
+│   │   │   ├── 02_seeds.sql
+│   ├── .dockerignore
+│   ├── docker-compose.yml
+│   └── Dockerfile
+├── frontend/
+├── .gitignore
 └── README.md
-```
 
 ---
 
@@ -130,7 +142,7 @@ Cada spot devuelve un campo `estado_actual` calculado en el backend según estas
 1. `restringido` — hay una restricción horaria activa en este momento.
 2. `sin_info` — el último reporte existe pero ya expiró.
 3. `sin_reportes` — nunca se reportó nada para ese lugar.
-4. `libre` / `ocupado` / `saliendo` — el reporte más reciente es válido.
+4. `libre` / `ocupado` — el reporte más reciente es válido.
 
 ---
 
