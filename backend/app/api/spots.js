@@ -3,8 +3,8 @@ import {
   createSpot,
   getAllSpots,
   getSpot,
-  removeSpot,
   updateSpot,
+  removeSpot,
 } from "../db/spots.js";
 
 export const endpointsSpots = Router();
