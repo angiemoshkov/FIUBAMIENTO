@@ -1,14 +1,16 @@
 import express from "express";
-import { endpointsPokemons } from "./api/pokemons.js";
-import { endpointsTipos } from "./api/tipos.js";
+import { endpointsSpots } from "./api/spots.js";
+import { endpointsReportes } from "./api/reportes.js";
+import { endpointsRestricciones } from "./api/restricciones.js";
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-app.use("/api/v1/pokemons", endpointsPokemons);
-app.use("/api/v1/tipos", endpointsTipos);
+app.use("/api/v1/spots", endpointsSpots);
+app.use("/api/v1/reportes", endpointsReportes);
+app.use("/api/v1/restricciones", endpointsRestricciones);
 
 app.get("/health", (req, res) => res.send("OK"));
 
