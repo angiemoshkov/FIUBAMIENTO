@@ -9,7 +9,7 @@ Antes de manejar hasta la zona, cualquier persona puede consultar el mapa y ver 
 ## ✨ Funcionalidades
 
 - **Mapa en tiempo casi real** — visualización de lugares de estacionamiento con pines de colores según su estado actual.
-- **Reportes con ciclo de vida** — cualquier usuario puede reportar el estado de un lugar (`libre`, `ocupado`, `me estoy yendo`). Los reportes expiran automáticamente si no hay actividad reciente, y el lugar pasa a estado `sin información`.
+- **Reportes con ciclo de vida** — cualquier usuario puede reportar el estado de un lugar (`libre`, `ocupado`). Los reportes expiran automáticamente si no hay actividad reciente, y el lugar pasa a estado `sin información`.
 - **Confirmaciones y desmentidas** — la comunidad puede votar si un reporte existente sigue siendo válido.
 - **Restricciones horarias** — cada lugar tiene asociadas las reglas vigentes de la zona (horarios prohibidos, carga y descarga, etc.). El sistema combina la disponibilidad reportada con la restricción horaria actual, mostrando una advertencia si el lugar no se puede usar en ese momento aunque esté "libre".
 - **Panel de administración** — ABM completo de lugares y restricciones.
