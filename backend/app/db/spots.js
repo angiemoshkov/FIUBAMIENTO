@@ -16,14 +16,14 @@ export async function createSpot(latitud, longitud, direccion_aproximada, estado
 //READ
 export async function getAllSpots() {
   const res = await db.query(
-    "SELECT s.id, s.latitud, s.longitud, s.direccion_aproximada, s.estado_actual, s.ultima_actualizacion FROM spots s",
+    "SELECT * FROM spots",
   );
   return res.rows;
 }
 
 export async function getSpot(id) {
   const res = await db.query(
-    "SELECT s.id, s.latitud, s.longitud, s.direccion_aproximada, s.estado_actual, s.ultima_actualizacion FROM spots s WHERE s.id = $1",
+    "SELECT * FROM spots s WHERE s.id = $1",
     [id],
   );
 
