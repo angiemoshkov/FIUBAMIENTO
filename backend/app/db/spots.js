@@ -1,41 +1,51 @@
-import { db } from "./pool.js";
+import { db } from "../db/pool.js";
 
-export async function getAllPokemons() {
+//---CRUD completo, respetando el orden de las siglas"---//
+
+//CREATE
+export async function createSpot(latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) {
   const res = await db.query(
-    "SELECT p.nombre, p.evolucion, t.nombre as tipo, p.rareza FROM pokemons p, tipos t WHERE p.tipo = t.id",
+    `INSERT INTO spots (latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) 
+    VALUES ($1, $2, $3, $4, $5)`,
+    [latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion],
+  );
+
+  return res.rowCount == 1;
+}
+
+//READ
+export async function getAllSpots() {
+  const res = await db.query(
+    "SELECT * FROM spots",
   );
   return res.rows;
 }
 
-export async function getPokemon(id) {
+export async function getSpot(id) {
   const res = await db.query(
-    "SELECT p.nombre, p.evolucion, t.nombre as tipo, p.rareza FROM pokemons p, tipos t WHERE p.tipo = t.id AND p.id = $1",
+    "SELECT * FROM spots s WHERE s.id = $1",
     [id],
   );
 
   return res.rows[0];
 }
 
-export async function removePokemon(id) {
-  const res = await db.query("DELETE FROM pokemons WHERE id = $1", [id]);
-
-  return res.rowCount == 1;
-}
-
-export async function updatePokemon(id, nombre, evolucion, tipo, rareza) {
+//UPDATE
+export async function updateSpot(id, latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) {
   const res = await db.query(
-    "UPDATE pokemons SET nombre=$1, evolucion=$2, tipo=$3, rareza=$4 WHERE id = $5",
-    [nombre, evolucion, tipo, rareza, id],
+    `UPDATE spots SET latitud=$1, longitud=$2, direccion_aproximada=$3, estado_actual=$4, ultima_actualizacion=$5 WHERE id = $6`,
+    [latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion, id],
   );
 
   return res.rowCount == 1;
 }
 
-export async function createPokemon(nombre, evolucion, tipo, rareza) {
-  const res = await db.query(
-    "INSERT INTO pokemons (nombre, evolucion, tipo, rareza) VALUES ($1, $2, $3, $4)",
-    [nombre, evolucion, tipo, rareza],
-  );
+//DELETE
+export async function removeSpot(id) {
+  const res = await db.query("DELETE FROM spots WHERE id = $1", [id]);
 
   return res.rowCount == 1;
 }
+
+
+

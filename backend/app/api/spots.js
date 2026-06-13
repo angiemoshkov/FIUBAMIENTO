@@ -1,166 +1,42 @@
 import { Router } from "express";
 import {
-  createPokemon,
-  getAllPokemons,
-  getPokemon,
-  removePokemon,
-  updatePokemon,
+  createSpot,
+  getAllSpots,
+  getSpot,
+  updateSpot,
+  removeSpot,
 } from "../db/spots.js";
-import { getTipoByName } from "../db/restricciones.js";
 
-export const endpointsPokemons = Router();
+export const endpointsSpots = Router();
 
-endpointsPokemons.get("/", async (req, res) => {
-  const pokemons = await getAllPokemons();
-  res.json(pokemons);
-});
+//---CRUD completo, respetando el orden de las siglas"---//
 
-endpointsPokemons.get("/:indice", async (req, res) => {
-  let indice = req.params.indice;
-  // Chequear que indice es un número.
-
-  const pokemon = await getPokemon(indice);
-
-  if (pokemon === undefined) {
-    res.sendStatus(404);
+//CREATE
+endpointsSpots.post("/", async (req, res) => {
+  if (req.body.latitud === undefined || isNaN(Number(req.body.latitud))) {
+    res.status(400).send("Latitud no es un número");
     return;
   }
 
-  res.json(pokemon);
-});
-
-// Actualización completa. Espera recibir todos los atributos del pokemon por body
-endpointsPokemons.put("/:indice", async (req, res) => {
-  let indice = req.params.indice;
-
-  if (
-    req.body.evolucion === undefined ||
-    !Number.isInteger(req.body.evolucion)
-  ) {
-    res.status(400).send("Evolucion not set");
+  if (req.body.longitud === undefined || isNaN(Number(req.body.longitud))) {
+    res.status(400).send("Longitud no es un número");
     return;
   }
 
-  // Agregar más validaciones y validaciones para el resto de campos
-
-  const tipo = await getTipoByName(req.body.tipo);
-
-  if (tipo === undefined) {
-    res.sendStatus(404);
+  if (req.body.direccion_aproximada === undefined) {
+    res.status(400).send("Direccion aproximada not set");
     return;
   }
 
-  const updated = await updatePokemon(
-    indice,
-    req.body.nombre,
-    req.body.evolucion,
-    tipo.id,
-    req.body.rareza,
-  );
+  const estado_actual = req.body.estado_actual ?? "ocupado";
+  const ultima_actualizacion = req.body.ultima_actualizacion ?? new Date();
 
-  if (!updated) {
-    res.sendStatus(500);
-    return;
-  }
-
-  res.sendStatus(200);
-});
-
-// Actualización parcial. Solo actualiza los atributos que llegan por body
-endpointsPokemons.patch("/:indice", async (req, res) => {
-  let indice = req.params.indice;
-
-  if (
-    req.body.evolucion !== undefined &&
-    !Number.isInteger(req.body.evolucion)
-  ) {
-    res.status(400).send("Evolucion no es un número");
-    return;
-  }
-
-  let pokemon = await getPokemon(indice);
-
-  if (pokemon === undefined) {
-    res.sendStatus(404);
-    return;
-  }
-
-  if (req.body.evolucion !== undefined) {
-    pokemon.evolucion = parseInt(req.body.evolucion);
-  }
-
-  let tipo;
-  if (req.body.tipo !== undefined) {
-    tipo = await getTipoByName(req.body.tipo);
-  } else {
-    // SUPER ineficiente, estamos consultando un valor que ya deberíamos tener.
-    tipo = await getTipoByName(pokemon.tipo);
-  }
-
-  if (tipo === undefined) {
-    res.sendStatus(404);
-    return;
-  }
-
-  pokemon.tipo = tipo.id;
-
-  const updated = await updatePokemon(
-    indice,
-    pokemon.nombre,
-    pokemon.evolucion,
-    pokemon.tipo,
-    pokemon.rareza,
-  );
-
-  if (!updated) {
-    res.sendStatus(500);
-    return;
-  }
-
-  res.sendStatus(200);
-});
-
-endpointsPokemons.delete("/:indice", async (req, res) => {
-  let indice = req.params.indice;
-
-  const pokemon = await getPokemon(indice);
-
-  if (pokemon === undefined) {
-    res.sendStatus(404);
-    return;
-  }
-
-  const eliminado = await removePokemon(indice);
-
-  if (!eliminado) {
-    res.sendStatus(500);
-    return;
-  }
-
-  res.json(pokemon);
-});
-
-endpointsPokemons.post("/", async (req, res) => {
-  if (
-    req.body.evolucion === undefined ||
-    !Number.isInteger(req.body.evolucion)
-  ) {
-    res.status(400).send("Evolucion not set");
-    return;
-  }
-
-  const tipo = await getTipoByName(req.body.tipo);
-
-  if (tipo === undefined) {
-    res.sendStatus(404);
-    return;
-  }
-
-  const created = await createPokemon(
-    req.body.nombre,
-    req.body.evolucion,
-    tipo.id,
-    req.body.rareza,
+  const created = await createSpot(
+    req.body.latitud,
+    req.body.longitud,
+    req.body.direccion_aproximada,
+    estado_actual,
+    ultima_actualizacion,
   );
 
   if (!created) {
@@ -169,9 +45,90 @@ endpointsPokemons.post("/", async (req, res) => {
   }
 
   res.status(201).json({
-    nombre: req.body.nombre,
-    evolucion: req.body.evolucion,
-    tipo: req.body.tipo,
-    rareza: req.body.rareza,
+    latitud: req.body.latitud,
+    longitud: req.body.longitud,
+    direccion_aproximada: req.body.direccion_aproximada,
+    estado_actual: estado_actual,
+    ultima_actualizacion: ultima_actualizacion,
   });
 });
+
+
+//READ
+endpointsSpots.get("/", async (req, res) => {
+  const spots = await getAllSpots();
+  res.json(spots);
+});
+
+endpointsSpots.get("/:id", async (req, res) => {
+  let id = req.params.id;
+
+  const spot = await getSpot(id);
+
+  if (spot === undefined) {
+    res.sendStatus(404);
+    return;
+  }
+
+  res.json(spot);
+});
+
+
+//UPDATE
+endpointsSpots.put("/:id", async (req, res) => {
+  let id = req.params.id;
+
+  if (req.body.latitud === undefined || isNaN(Number(req.body.latitud))) {
+    res.status(400).send("Latitud no es un número");
+    return;
+  }
+
+  if (req.body.longitud === undefined || isNaN(Number(req.body.longitud))) {
+    res.status(400).send("Longitud no es un número");
+    return;
+  }
+
+  if (req.body.direccion_aproximada === undefined) {
+    res.status(400).send("Direccion aproximada not set");
+    return;
+  }
+
+  const updated = await updateSpot(
+    id,
+    req.body.latitud,
+    req.body.longitud,
+    req.body.direccion_aproximada,
+    req.body.estado_actual ?? "ocupado",
+    req.body.ultima_actualizacion ?? new Date(),
+  );
+
+  if (!updated) {
+    res.sendStatus(500);
+    return;
+  }
+
+  res.sendStatus(200);
+});
+
+
+//DELETE
+endpointsSpots.delete("/:id", async (req, res) => {
+  let id = req.params.id;
+
+  const spot = await getSpot(id);
+
+  if (spot === undefined) {
+    res.sendStatus(404);
+    return;
+  }
+
+  const eliminado = await removeSpot(id);
+
+  if (!eliminado) {
+    res.sendStatus(500);
+    return;
+  }
+
+  res.json(spot);
+});
+
