@@ -92,7 +92,7 @@ cd FIUBAMIENTO
 2. Entrar a la carpeta del backend y levantar los servicios:
 
 ```bash
-cd "backend de prueba (pokeAPI)"
+cd "backend"
 docker compose up --build
 ```
 
