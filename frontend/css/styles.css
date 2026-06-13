@@ -1,0 +1,34 @@
+#titulo {
+   position: absolute;   /* 1. Lo despega del flujo normal y lo hace flotar */
+    top: 20px;            /* 2. Separación de 20px desde el techo de la pantalla */
+    left: 50%;            /* 3. Lo movemos al centro... */
+    transform: translateX(-50%); /* ...y lo centramos perfectamente respecto a sí mismo */
+    
+    z-index: 1000;        /* 4. Obligatorio: Leaflet usa z-index altos. Con 1000 nos aseguramos quedar ARRIBA del mapa */
+    
+    /* Diseño físico de la "isla" */
+    background-color: rgba(255, 255, 255, 0.95); /* Blanco con un pelín de transparencia */
+    padding: 10px 30px;   /* Espaciado interno (alto y ancho) */
+    border-radius: 30px;  /* Bordes bien redondeados estilo píldora/isla */
+    
+    /* Sombra suave para darle efecto de profundidad (que parezca despegado del mapa) */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
+    
+    /* Evita que la isla estorbe si el usuario quiere hacer clic justo debajo de ella en el mapa */
+    pointer-events: none;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+
+#map {
+   width: 100vw;   /* Ocupá el 100% del ancho de la ventana del navegador */
+    height: 100vh;  /* Ocupá el 100% del alto de la ventana del navegador */
+    border: none; /* Le sacamos el borde para que sea continuo */
+}
