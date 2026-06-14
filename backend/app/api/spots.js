@@ -4,7 +4,7 @@ import {
   getAllSpots,
   getSpot,
   updateSpot,
-  removeSpot,
+  deleteSpot,
 } from "../db/spots.js";
 
 export const endpointsSpots = Router();
