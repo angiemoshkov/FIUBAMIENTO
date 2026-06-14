@@ -9,7 +9,7 @@ Antes de manejar hasta la zona, cualquier persona puede consultar el mapa y ver 
 ## ✨ Funcionalidades
 
 - **Mapa en tiempo casi real** — visualización de lugares de estacionamiento con pines de colores según su estado actual.
-- **Reportes con ciclo de vida** — cualquier usuario puede reportar el estado de un lugar (`libre`, `ocupado`, `me estoy yendo`). Los reportes expiran automáticamente si no hay actividad reciente, y el lugar pasa a estado `sin información`.
+- **Reportes con ciclo de vida** — cualquier usuario puede reportar el estado de un lugar (`libre`, `ocupado`). Los reportes expiran automáticamente si no hay actividad reciente, y el lugar pasa a estado `sin información`.
 - **Confirmaciones y desmentidas** — la comunidad puede votar si un reporte existente sigue siendo válido.
 - **Restricciones horarias** — cada lugar tiene asociadas las reglas vigentes de la zona (horarios prohibidos, carga y descarga, etc.). El sistema combina la disponibilidad reportada con la restricción horaria actual, mostrando una advertencia si el lugar no se puede usar en ese momento aunque esté "libre".
 - **Panel de administración** — ABM completo de lugares y restricciones.
@@ -40,21 +40,34 @@ Antes de manejar hasta la zona, cualquier persona puede consultar el mapa y ver 
 
 ## 📁 Estructura del proyecto
 
-> ⚠️ El backend todavía vive dentro de `backend de prueba (pokeAPI)/`, que arrancó como una maqueta siguiendo el ejemplo de la cátedra (con entidades de Pokémon). Se está migrando gradualmente a las entidades reales de FIUBAMIENTO (`spots`, `reportes`, `restricciones`) y se va a renombrar más adelante.
+> ⚠️ Se está migrando gradualmente a las entidades reales de FIUBAMIENTO (`spots`, `reportes`, `restricciones`). 
 
 ```
 FIUBAMIENTO/
-├── backend de prueba (pokeAPI)/   # Backend (Node.js + Express + Postgres) — en migración
+├── backend/
 │   ├── app/
 │   │   ├── api/
+│   │   │   ├── reportes.js
+│   │   │   ├── restricciones.js
+│   │   │   └── spots.js
+│   │   ├── db/
+│   │   │   ├── pool.js
+│   │   │   ├── reportes.js
+│   │   │   ├── restricciones.js
+│   │   │   └── spots.js
+│   │   ├── node_modules/
+│   │   ├── .gitignore
 │   │   ├── app.js
-│   │   └── package.json
+│   │   ├── package-lock.json
+│   │   ├── package.json
 │   ├── data/
-│   │   ├── 0001_schemas.sql
-│   │   └── 02_seeds.sql
-│   ├── Dockerfile
-│   └── docker-compose.yml
-├── frontend/                      # (por agregar)
+│   │   │   ├── 01_schemas.sql
+│   │   │   ├── 02_seeds.sql
+│   ├── .dockerignore
+│   ├── docker-compose.yml
+│   └── Dockerfile
+├── frontend/
+├── .gitignore
 └── README.md
 ```
 
@@ -79,7 +92,7 @@ cd FIUBAMIENTO
 2. Entrar a la carpeta del backend y levantar los servicios:
 
 ```bash
-cd "backend de prueba (pokeAPI)"
+cd "backend"
 docker compose up --build
 ```
 
@@ -128,9 +141,9 @@ La base de datos se inicializa automáticamente con el schema y los datos de pru
 Cada spot devuelve un campo `estado_actual` calculado en el backend según estas reglas, en orden de prioridad:
 
 1. `restringido` — hay una restricción horaria activa en este momento.
-2. `sin_info` — el último reporte existe pero ya expiró.
+2. `sin_info_reciente` — el último reporte existe pero ya expiró.
 3. `sin_reportes` — nunca se reportó nada para ese lugar.
-4. `libre` / `ocupado` / `saliendo` — el reporte más reciente es válido.
+4. `libre` / `ocupado` — el reporte más reciente es válido.
 
 ---
 
