@@ -1,9 +1,13 @@
 services:
-  pokeapi:
+  fiubamientoapi:
     build: . #builder el dockerfile de esta carpeta
     image: fiubamiento_backend:v1 
     ports:
       - "3000:3000"
+    command: npx nodemon app.js
+    volumes:
+      - ./app:/app
+      - /app/node_modules
     depends_on:
       - db
       #env_file: ./.env
