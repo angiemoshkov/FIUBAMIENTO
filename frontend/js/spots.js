@@ -11,11 +11,11 @@ spots.forEach(spot => {
     const estado_actual = document.createElement("td");
     const ultima_actualizacion = document.createElement("td");
 
-    latitud.textContent = spot.latitude;
-    longitud.textContent = spot.longitude;
-    ubicacion.textContent = spot.location;
-    estado_actual.textContent = spot.current_status;
-    ultima_actualizacion.textContent = spot.last_update;
+    latitud.textContent = spot.latitud;
+    longitud.textContent = spot.longitud;
+    ubicacion.textContent = spot.direccion_aproximada;
+    estado_actual.textContent = spot.estado_actual;
+    ultima_actualizacion.textContent = spot.ultima_actualizacion;
 
     row.appendChild(latitud);
     row.appendChild(longitud);
