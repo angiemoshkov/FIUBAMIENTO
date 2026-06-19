@@ -1,4 +1,4 @@
-INSERT INTO spots (latitud, longitud, direccion_aproximada, estado_actual) VALUES
+INSERT INTO spots (latitud, longitud, ubicacion, estado_actual) VALUES
 (-34.617565, -58.368310, 'Av. Paseo Colón 820 (Frente a FIUBA)', 'libre'),
 (-34.617120, -58.367850, 'Estados Unidos 400 (A la vuelta)', 'ocupado'),
 (-34.618100, -58.369100, 'Av. Independencia 500 (Esquina)', 'restringido');

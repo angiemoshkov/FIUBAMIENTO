@@ -9,10 +9,26 @@ import {
 
 export const endpointsSpots = Router();
 
-//---CRUD completo, respetando el orden de las siglas"---//
+const FIUBA = { lat: -34.6178, lon: -58.3685 };  // verificá vos las coords exactas
+const RADIO_MAX = 300; // metros
+
+function distanciaEnMetros(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const rad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * rad;
+  const dLon = (lon2 - lon1) * rad;
+  const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
+            Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+  
 
 //CREATE
 endpointsSpots.post("/", async (req, res) => {
+  const { lat, lng, descripcion } = req.body;
+  const distancia = distanciaEnMetros(FIUBA.lat, FIUBA.lon, lat, lng);
+
   if (req.body.latitud === undefined || isNaN(Number(req.body.latitud))) {
     res.status(400).send("Latitud no es un número");
     return;
@@ -23,10 +39,26 @@ endpointsSpots.post("/", async (req, res) => {
     return;
   }
 
-  if (req.body.direccion_aproximada === undefined) {
-    res.status(400).send("Direccion aproximada not set");
+  if (req.body.ubicacion === undefined) {
+    res.status(400).send("Ubicacion not set");
     return;
   }
+
+  if (typeof lat !== 'number' || typeof lng !== 'number') {
+    return res.status(400).json({ error: 'Faltan coordenadas válidas' });
+  }
+
+  if (distancia > RADIO_MAX) {
+    return res.status(400).json({ error: 'El spot está fuera del radio permitido (300m de FIUBA)' });
+  }
+
+  try {
+    const nuevoSpot = await createSpot(lat, lng, descripcion);
+    return res.status(201).json(nuevoSpot);
+  } catch (err) {
+    return res.status(500).json({ error: 'Error al crear el spot' });
+  }
+});
 
   const estado_actual = req.body.estado_actual ?? "ocupado";
   const ultima_actualizacion = req.body.ultima_actualizacion ?? new Date();
@@ -34,7 +66,7 @@ endpointsSpots.post("/", async (req, res) => {
   const created = await createSpot(
     req.body.latitud,
     req.body.longitud,
-    req.body.direccion_aproximada,
+    req.body.ubicacion,
     estado_actual,
     ultima_actualizacion,
   );
@@ -47,7 +79,7 @@ endpointsSpots.post("/", async (req, res) => {
   res.status(201).json({
     latitud: req.body.latitud,
     longitud: req.body.longitud,
-    direccion_aproximada: req.body.direccion_aproximada,
+    ubicacion: req.body.ubicacion,
     estado_actual: estado_actual,
     ultima_actualizacion: ultima_actualizacion,
   });
@@ -88,8 +120,8 @@ endpointsSpots.put("/:id", async (req, res) => {
     return;
   }
 
-  if (req.body.direccion_aproximada === undefined) {
-    res.status(400).send("Direccion aproximada not set");
+  if (req.body.ubicacion === undefined) {
+    res.status(400).send("Ubicacion not set");
     return;
   }
 
@@ -97,7 +129,7 @@ endpointsSpots.put("/:id", async (req, res) => {
     id,
     req.body.latitud,
     req.body.longitud,
-    req.body.direccion_aproximada,
+    req.body.ubicacion,
     req.body.estado_actual ?? "ocupado",
     req.body.ultima_actualizacion ?? new Date(),
   );
