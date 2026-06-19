@@ -4,7 +4,7 @@ import {
   getAllSpots,
   getSpot,
   updateSpot,
-  removeSpot,
+  deleteSpot,
 } from "../db/spots.js";
 
 export const endpointsSpots = Router();
@@ -30,50 +30,27 @@ endpointsSpots.post("/", async (req, res) => {
   const distancia = distanciaEnMetros(FIUBA.lat, FIUBA.lon, lat, lng);
 
   if (req.body.latitud === undefined || isNaN(Number(req.body.latitud))) {
-    res.status(400).send("Latitud no es un número");
-    return;
+    return res.status(400).json({ error: "Latitud no es un número" });
   }
 
   if (req.body.longitud === undefined || isNaN(Number(req.body.longitud))) {
-    res.status(400).send("Longitud no es un número");
-    return;
+    return res.status(400).json({ error: "Longitud no es un número" });
   }
 
-  if (req.body.ubicacion === undefined) {
-    res.status(400).send("Ubicacion not set");
-    return;
+  if (req.body.direccion_aproximada === undefined) {
+    return res.status(400).json({ error: "Direccion aproximada not set" });
   }
-
-  if (typeof lat !== 'number' || typeof lng !== 'number') {
-    return res.status(400).json({ error: 'Faltan coordenadas válidas' });
-  }
-
-  if (distancia > RADIO_MAX) {
-    return res.status(400).json({ error: 'El spot está fuera del radio permitido (300m de FIUBA)' });
-  }
-
-  try {
-    const nuevoSpot = await createSpot(lat, lng, descripcion);
-    return res.status(201).json(nuevoSpot);
-  } catch (err) {
-    return res.status(500).json({ error: 'Error al crear el spot' });
-  }
-});
-
-  const estado_actual = req.body.estado_actual ?? "ocupado";
-  const ultima_actualizacion = req.body.ultima_actualizacion ?? new Date();
 
   const created = await createSpot(
     req.body.latitud,
     req.body.longitud,
-    req.body.ubicacion,
-    estado_actual,
-    ultima_actualizacion,
+    req.body.direccion_aproximada,
+    req.body.estado_actual ?? "ocupado",
+    req.body.ultima_actualizacion ?? new Date()
   );
 
   if (!created) {
-    res.sendStatus(500);
-    return;
+    return res.status(500).json({ error: "No se pudo crear el spot" });
   }
 
   res.status(201).json({
@@ -98,8 +75,7 @@ endpointsSpots.get("/:id", async (req, res) => {
   const spot = await getSpot(id);
 
   if (spot === undefined) {
-    res.sendStatus(404);
-    return;
+    return res.status(404).json({ error: "Spot no encontrado" });
   }
 
   res.json(spot);
@@ -111,18 +87,15 @@ endpointsSpots.put("/:id", async (req, res) => {
   let id = req.params.id;
 
   if (req.body.latitud === undefined || isNaN(Number(req.body.latitud))) {
-    res.status(400).send("Latitud no es un número");
-    return;
+    return res.status(400).json({ error: "Latitud no es un número" });
   }
 
   if (req.body.longitud === undefined || isNaN(Number(req.body.longitud))) {
-    res.status(400).send("Longitud no es un número");
-    return;
+    return res.status(400).json({ error: "Longitud no es un número" });
   }
 
-  if (req.body.ubicacion === undefined) {
-    res.status(400).send("Ubicacion not set");
-    return;
+  if (req.body.direccion_aproximada === undefined) {
+    return res.status(400).json({ error: "Direccion aproximada not set" });
   }
 
   const updated = await updateSpot(
@@ -135,11 +108,10 @@ endpointsSpots.put("/:id", async (req, res) => {
   );
 
   if (!updated) {
-    res.sendStatus(500);
-    return;
+    return res.status(500).json({ error: "No se pudo actualizar el spot" });
   }
 
-  res.sendStatus(200);
+  res.status(200).json({ mensaje: "Spot actualizado" });
 });
 
 
@@ -150,15 +122,13 @@ endpointsSpots.delete("/:id", async (req, res) => {
   const spot = await getSpot(id);
 
   if (spot === undefined) {
-    res.sendStatus(404);
-    return;
+    return res.status(404).json({ error: "Spot no encontrado" });
   }
 
   const eliminado = await removeSpot(id);
 
   if (!eliminado) {
-    res.sendStatus(500);
-    return;
+    return res.status(500).json({ error: "No se pudo eliminar el spot" });
   }
 
   res.json(spot);
