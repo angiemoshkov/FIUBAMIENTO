@@ -20,15 +20,15 @@ setTimeout(() => { map.invalidateSize(); }, 100);
 
 
 // esto cambia el color de los puntos segun esten ocupados o libres
-spotsDesdeBaseDeDatos.forEach(spot => {
+spotsDesdeBaseDeDatos.forEach(spots => {
     // Si ocupado es true -> Rojo (#e74c3c), si es false -> Verde (#2ecc71)
-    const colorFinal = (spot.estado_actual === 'ocupado') ? '#e74c3c' : '#2ecc71';
+    const colorFinal = (spots.estado_actual === 'ocupado') ? '#e74c3c' : '#2ecc71';
 
-    L.circleMarker([spot.latitud, spot.longitud], {
+    L.circleMarker([spots.latitud, spot.longitud], {
         radius: 6,
         fillColor: colorFinal,
         color: "#ffffff", 
         weight: 2,
         fillOpacity: 0.9
-    }).addTo(map).bindPopup(`<b>${spot.direccion_aproximada}</b><br>Estado: ${(spot.estado_actual === 'ocupado') ? 'Ocupado' : 'Libre'}`);
+    }).addTo(map).bindPopup(`<b>${spot.direccion_aproximada}</b><br>Estado: ${(spots.estado_actual === 'ocupado') ? 'Ocupado' : 'Libre'}`);
 });
