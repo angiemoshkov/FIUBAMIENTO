@@ -1,3 +1,4 @@
+
 // 1. Inicializar el mapa centrado en FIUBA (Paseo Colón) con un zoom de 16
 const map = L.map('map').setView([-34.6177, -58.3683], 16);
 
@@ -16,11 +17,12 @@ fiubaMarker.bindPopup("<b>Sede Paseo Colón</b><br>Zonas de estacionamiento alre
 // Fuerza a Leaflet a recalcular el tamaño completo de la pantalla
 setTimeout(() => { map.invalidateSize(); }, 100);
 
-// esto cambia el color de los puntos segun esten ocupados o libres
 
+
+// esto cambia el color de los puntos segun esten ocupados o libres
 spotsDesdeBaseDeDatos.forEach(spot => {
     // Si ocupado es true -> Rojo (#e74c3c), si es false -> Verde (#2ecc71)
-    const colorFinal = spot.ocupado ? '#e74c3c' : '#2ecc71';
+    const colorFinal = (spot.estado_actual === 'ocupado') ? '#e74c3c' : '#2ecc71';
 
     L.circleMarker([spot.latitud, spot.longitud], {
         radius: 6,
@@ -28,5 +30,5 @@ spotsDesdeBaseDeDatos.forEach(spot => {
         color: "#ffffff", 
         weight: 2,
         fillOpacity: 0.9
-    }).addTo(map).bindPopup(`<b>${spot.descripcion}</b><br>Estado: ${spot.ocupado ? 'Ocupado' : 'Libre'}`);
+    }).addTo(map).bindPopup(`<b>${spot.direccion_aproximada}</b><br>Estado: ${(spot.estado_actual === 'ocupado') ? 'Ocupado' : 'Libre'}`);
 });
