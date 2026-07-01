@@ -1,3 +1,4 @@
+
 // 1. Inicializar el mapa centrado en FIUBA (Paseo Colón) con un zoom de 16
 const map = L.map('map').setView([-34.6177, -58.3683], 16);
 
@@ -25,5 +26,5 @@ spotsDesdeBaseDeDatos.forEach(spot => {
         color: "#ffffff", 
         weight: 2,
         fillOpacity: 0.9
-    }).addTo(map).bindPopup(`<b>${spot.descripcion}</b><br>Estado: ${spot.ocupado ? 'Ocupado' : 'Libre'}`);
+    }).addTo(map).bindPopup(`<b>${spot.direccion_aproximada}</b><br>Estado: ${(spot.estado_actual === 'ocupado') ? 'Ocupado' : 'Libre'}`);
 });
