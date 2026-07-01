@@ -1,0 +1,43 @@
+services:
+  fiubamientoapi:
+    build: ./backend #buildea el Dockerfile de la carpeta backend
+    image: fiubamiento_backend:v1 
+    ports:
+      - "3000:3000"
+    command: npx nodemon app.js
+    volumes:
+      - ./backend/app:/app
+      - /app/node_modules
+    depends_on:
+      - db
+      #env_file: ./.env
+    environment:
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASS: post
+      DB_NAME: FIUBAMIENTO
+  
+  db:
+    image: postgres:17
+    container_name: fiubamiento_db
+    environment:
+     POSTGRES_USER: "postgres"
+     POSTGRES_PASSWORD: "post"
+     POSTGRES_DB: FIUBAMIENTO
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./backend/data:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/postgresql/data
+  
+  frontend:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+
+volumes:
+  db_data:
+
