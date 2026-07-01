@@ -1,7 +1,24 @@
 INSERT INTO spots (latitud, longitud, direccion_aproximada, estado_actual) VALUES
-(-34.617565, -58.368310, 'Av. Paseo Colón 820 (Frente a FIUBA)', 'libre'),
-(-34.617120, -58.367850, 'Estados Unidos 400 (A la vuelta)', 'ocupado'),
-(-34.618100, -58.369100, 'Av. Independencia 500 (Esquina)', 'restringido');
+(-34.6165645, -58.3695091, 'Calle San Lorenzo', 'libre'),
+(-34.6165652, -58.3695429, 'Calle San Lorenzo', 'ocupado'),
+(-34.6165662, -58.3695712, 'Calle San Lorenzo', 'libre'),
+(-34.6165683, -58.3695994, 'Calle San Lorenzo', 'ocupado'),
+(-34.6165683, -58.3696276, 'Calle San Lorenzo', 'libre'),
+(-34.6165694, -58.3696507, 'Calle San Lorenzo', 'libre'),
+(-34.6165683, -58.3696751, 'Calle San Lorenzo', 'ocupado'),
+(-34.6165683, -58.3697058, 'Calle San Lorenzo', 'libre'),
+(-34.6165705, -58.3697353, 'Calle San Lorenzo', 'ocupado'),
+(-34.6165726, -58.3697674, 'Calle San Lorenzo', 'libre'), 
+(-34.6165736, -58.3697918, 'Calle San Lorenzo', 'libre'),
+(-34.6165726, -58.3698200, 'Calle San Lorenzo', 'ocupado'),
+(-34.6165726, -58.3698546, 'Calle San Lorenzo', 'libre'),
+(-34.6165747, -58.3698854, 'Calle San Lorenzo', 'libre'),
+(-34.6165768, -58.3699136, 'Calle San Lorenzo', 'ocupado'),
+(-34.6165768, -58.3699508, 'Calle San Lorenzo', 'libre'),
+(-34.6165800, -58.3699790, 'Calle San Lorenzo', 'libre'),
+(-34.6165821, -58.3700085, 'Calle San Lorenzo', 'ocupado'),
+(-34.6165800, -58.3700406, 'Calle San Lorenzo', 'ocupado'),
+(-34.6165831, -58.3700727, 'Calle San Lorenzo', 'libre');
 
 INSERT INTO reportes (spot_id, estado_reportado, fecha_creacion, fecha_expiracion, confianza_positiva, confianza_negativa) VALUES
 -- Reporte para el Spot 1 (Alguien vio que se liberó hace un ratito, expira en 20 min)
