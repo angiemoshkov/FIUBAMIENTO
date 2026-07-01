@@ -6,6 +6,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
+const fiubaMarker = L.marker([-34.6177, -58.3683]).addTo(map);
+
+// 4. Agregarle un cartelito (popup) al hacerle clic al pin
+fiubaMarker.bindPopup("<b>Sede Paseo Colón</b><br>Zonas de estacionamiento alrededor.").openPopup();
+
+
 setTimeout(() => { map.invalidateSize(); }, 100);
 
 async function cargarSpots() {

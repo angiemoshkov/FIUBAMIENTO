@@ -2,11 +2,14 @@ import express from "express";
 import { endpointsSpots } from "./api/spots.js";
 import { endpointsReportes } from "./api/reportes.js";
 import { endpointsRestricciones } from "./api/restricciones.js";
+import cors from "cors"
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+
+app.use(cors({origin: "http://localhost:8080"}))
 
 app.use("/api/v1/spots", endpointsSpots);
 app.use("/api/v1/reportes", endpointsReportes);
