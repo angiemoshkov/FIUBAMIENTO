@@ -7,21 +7,24 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 const fiubaMarker = L.marker([-34.6177, -58.3683]).addTo(map);
-
-// 4. Agregarle un cartelito (popup) al hacerle clic al pin
 fiubaMarker.bindPopup("<b>Sede Paseo Colón</b><br>Zonas de estacionamiento alrededor.").openPopup();
-
 
 setTimeout(() => { map.invalidateSize(); }, 100);
 
-spotsDesdeBaseDeDatos.forEach(spot => {
-    const colorFinal = spot.ocupado ? '#e74c3c' : '#2ecc71';
+async function cargarSpots() {
+    const response = await fetch('http://localhost:3000/api/v1/spots');
+    const spotsDesdeBaseDeDatos = await response.json();
 
-    L.circleMarker([spots.latitud, spot.longitud], {
-        radius: 6,
-        fillColor: colorFinal,
-        color: "#ffffff", 
-        weight: 2,
-        fillOpacity: 0.9
-    }).addTo(map).bindPopup(`<b>${spot.direccion_aproximada}</b><br>Estado: ${(spots.estado_actual === 'ocupado') ? 'Ocupado' : 'Libre'}`);
-});
+    spotsDesdeBaseDeDatos.forEach(spot => {
+        const colorFinal = spot.estado_actual === 'ocupado' ? '#e74c3c' : '#2ecc71';
+        L.circleMarker([spot.latitud, spot.longitud], {
+            radius: 6,
+            fillColor: colorFinal,
+            color: "#ffffff",
+            weight: 2,
+            fillOpacity: 0.9
+        }).addTo(map).bindPopup(`<b>${spot.direccion_aproximada}</b><br>Estado: ${spot.estado_actual === 'ocupado' ? 'Ocupado' : 'Libre'}`);
+    });
+}
+
+cargarSpots();
