@@ -15,7 +15,7 @@ services:
       DB_HOST: "db"
       DB_PORT: "5432"
       DB_USER: postgres
-      DB_PASSWORD: post
+      DB_PASS: post
       DB_NAME: FIUBAMIENTO
   
   db:
@@ -30,6 +30,14 @@ services:
     volumes:
       - ./data:/docker-entrypoint-initdb.d
       - db_data:/var/lib/postgresql/data
+  
+  frontend:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ../frontend:/usr/share/nginx/html
+
 volumes:
   db_data:
 
