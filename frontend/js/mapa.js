@@ -1,30 +1,33 @@
 
-// 1. Inicializar el mapa centrado en FIUBA (Paseo Colón) con un zoom de 16
 const map = L.map('map').setView([-34.6177, -58.3683], 16);
 
-// 2. Cargar la "capa" de diseño del mapa desde OpenStreetMap (los dibujos de las calles)
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
-
 
 const fiubaMarker = L.marker([-34.6177, -58.3683]).addTo(map);
 
 // 4. Agregarle un cartelito (popup) al hacerle clic al pin
 fiubaMarker.bindPopup("<b>Sede Paseo Colón</b><br>Zonas de estacionamiento alrededor.").openPopup();
 
-// Fuerza a Leaflet a recalcular el tamaño completo de la pantalla
+
 setTimeout(() => { map.invalidateSize(); }, 100);
 
-spotsDesdeBaseDeDatos.forEach(spot => {
-    const colorFinal = spot.ocupado ? '#e74c3c' : '#2ecc71';
+async function cargarSpots() {
+    const response = await fetch('http://localhost:3000/api/v1/spots');
+    const spotsDesdeBaseDeDatos = await response.json();
 
-    L.circleMarker([spot.latitud, spot.longitud], {
-        radius: 6,
-        fillColor: colorFinal,
-        color: "#ffffff", 
-        weight: 2,
-        fillOpacity: 0.9
-    }).addTo(map).bindPopup(`<b>${spot.direccion_aproximada}</b><br>Estado: ${(spot.estado_actual === 'ocupado') ? 'Ocupado' : 'Libre'}`);
-});
+    spotsDesdeBaseDeDatos.forEach(spot => {
+        const colorFinal = (spot.estado_actual === 'ocupado') ? '#e74c3c' : '#2ecc71';
+        L.circleMarker([spot.latitud, spot.longitud], {
+            radius: 6,
+            fillColor: colorFinal,
+            color: "#ffffff",
+            weight: 2,
+            fillOpacity: 0.9
+        }).addTo(map).bindPopup(`<b>${spot.direccion_aproximada}</b><br>Estado: ${(spot.estado_actual === 'ocupado') ? 'Ocupado' : 'Libre'}`);
+    });
+}
+
+cargarSpots();
