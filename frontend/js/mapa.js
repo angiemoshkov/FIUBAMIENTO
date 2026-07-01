@@ -15,3 +15,18 @@ fiubaMarker.bindPopup("<b>Sede Paseo Colón</b><br>Zonas de estacionamiento alre
 
 // Fuerza a Leaflet a recalcular el tamaño completo de la pantalla
 setTimeout(() => { map.invalidateSize(); }, 100);
+
+// esto cambia el color de los puntos segun esten ocupados o libres
+
+spotsDesdeBaseDeDatos.forEach(spot => {
+    // Si ocupado es true -> Rojo (#e74c3c), si es false -> Verde (#2ecc71)
+    const colorFinal = spot.ocupado ? '#e74c3c' : '#2ecc71';
+
+    L.circleMarker([spot.latitud, spot.longitud], {
+        radius: 6,
+        fillColor: colorFinal,
+        color: "#ffffff", 
+        weight: 2,
+        fillOpacity: 0.9
+    }).addTo(map).bindPopup(`<b>${spot.descripcion}</b><br>Estado: ${spot.ocupado ? 'Ocupado' : 'Libre'}`);
+});
