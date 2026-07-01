@@ -14,20 +14,14 @@ fiubaMarker.bindPopup("<b>Sede Paseo Colón</b><br>Zonas de estacionamiento alre
 
 setTimeout(() => { map.invalidateSize(); }, 100);
 
-async function cargarSpots() {
-    const response = await fetch('http://localhost:3000/api/v1/spots');
-    const spotsDesdeBaseDeDatos = await response.json();
+spotsDesdeBaseDeDatos.forEach(spot => {
+    const colorFinal = spot.ocupado ? '#e74c3c' : '#2ecc71';
 
-    spotsDesdeBaseDeDatos.forEach(spot => {
-        const colorFinal = (spot.estado_actual === 'ocupado') ? '#e74c3c' : '#2ecc71';
-        L.circleMarker([spot.latitud, spot.longitud], {
-            radius: 6,
-            fillColor: colorFinal,
-            color: "#ffffff",
-            weight: 2,
-            fillOpacity: 0.9
-        }).addTo(map).bindPopup(`<b>${spot.direccion_aproximada}</b><br>Estado: ${(spot.estado_actual === 'ocupado') ? 'Ocupado' : 'Libre'}`);
-    });
-}
-
-cargarSpots();
+    L.circleMarker([spots.latitud, spot.longitud], {
+        radius: 6,
+        fillColor: colorFinal,
+        color: "#ffffff", 
+        weight: 2,
+        fillOpacity: 0.9
+    }).addTo(map).bindPopup(`<b>${spot.direccion_aproximada}</b><br>Estado: ${(spots.estado_actual === 'ocupado') ? 'Ocupado' : 'Libre'}`);
+});
