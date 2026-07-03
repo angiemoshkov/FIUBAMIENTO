@@ -21,16 +21,19 @@ endpointsSpots.post("/", async (req, res) => {
     return res.status(400).json({ error: "Longitud no es un número" });
   }
 
-  if (req.body.direccion_aproximada === undefined) {
-    return res.status(400).json({ error: "Direccion aproximada not set" });
+  if (typeof req.body.direccion_aproximada !== "string" || req.body.direccion_aproximada.trim() == "") {
+    return res.status(400).json({error: "Dirección aproximada debe ser un string y no puede estar vacio"});
+  }
+
+  if (typeof req.body.referencia !== "string" || req.body.referencia.trim() == "") {
+    return res.status(400).json({error: "Referencia debe ser un string y no puede estar vacio"});
   }
 
   const created = await createSpot(
     req.body.latitud,
     req.body.longitud,
     req.body.direccion_aproximada,
-    req.body.estado_actual ?? "ocupado",
-    req.body.ultima_actualizacion ?? new Date()
+    req.body.referencia,
   );
 
   if (!created) {
@@ -41,8 +44,7 @@ endpointsSpots.post("/", async (req, res) => {
     latitud: req.body.latitud,
     longitud: req.body.longitud,
     direccion_aproximada: req.body.direccion_aproximada,
-    estado_actual: estado_actual,
-    ultima_actualizacion: ultima_actualizacion,
+    referencia: req.body.referencia,
   });
 });
 
@@ -78,8 +80,12 @@ endpointsSpots.put("/:id", async (req, res) => {
     return res.status(400).json({ error: "Longitud no es un número" });
   }
 
-  if (req.body.direccion_aproximada === undefined) {
-    return res.status(400).json({ error: "Direccion aproximada not set" });
+  if (typeof req.body.direccion_aproximada !== "string" || req.body.direccion_aproximada.trim() == "") {
+    return res.status(400).json({error: "Dirección aproximada debe ser un string y no puede estar vacio"});
+  }
+
+  if (typeof req.body.referencia !== "string" || req.body.referencia.trim() == "") {
+    return res.status(400).json({error: "Referencia debe ser un string y no puede estar vacio"});
   }
 
   const updated = await updateSpot(
@@ -87,8 +93,7 @@ endpointsSpots.put("/:id", async (req, res) => {
     req.body.latitud,
     req.body.longitud,
     req.body.direccion_aproximada,
-    req.body.estado_actual ?? "ocupado",
-    req.body.ultima_actualizacion ?? new Date(),
+    req.body.referencia
   );
 
   if (!updated) {
@@ -109,7 +114,7 @@ endpointsSpots.delete("/:id", async (req, res) => {
     return res.status(404).json({ error: "Spot no encontrado" });
   }
 
-  const eliminado = await removeSpot(id);
+  const eliminado = await deleteSpot(id);
 
   if (!eliminado) {
     return res.status(500).json({ error: "No se pudo eliminar el spot" });
