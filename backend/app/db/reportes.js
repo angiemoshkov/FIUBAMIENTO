@@ -11,6 +11,16 @@ export async function getReportesBySpot(spot_id) {
   return res.rows;
 }
 
+export async function getReporteById(id) {
+  const res = await db.query(
+    `SELECT id, spot_id, estado_reportado, fecha_creacion, fecha_expiracion, confianza_positiva, confianza_negativa
+     FROM reportes
+     WHERE id = $1`,
+    [id]
+  );
+  return res.rows[0];
+}
+
 export async function createReporte(spot_id, estado_reportado) {
   const res = await db.query(
     `INSERT INTO reportes (spot_id, estado_reportado, fecha_expiracion)
