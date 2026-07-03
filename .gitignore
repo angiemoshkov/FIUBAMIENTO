@@ -9,3 +9,6 @@ __pycache__/
 
 # Archivos con contraseñas o datos sensibles (¡Muy importante!)
 .env
+
+# Datos persistentes de la base (los genera Postgres al levantar)
+backend/db_data/
