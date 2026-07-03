@@ -22,7 +22,7 @@ INSERT INTO spots (latitud, longitud, direccion_aproximada, referencia, fecha_re
 
 INSERT INTO reportes (spot_id, estado_reportado, fecha_creacion, fecha_expiracion, confianza_positiva, confianza_negativa) VALUES
 -- Reporte para el Spot 1 (Alguien vio que se liberó hace un ratito, expira en 20 min)
-(1, 'libre', NOW() - INTERVAL '5 minutes', NOW() + INTERVAL '15 minutes', 3, 0),
+(1, 'libre', NOW() - INTERVAL '5 minutes', NOW() + INTERVAL '15 minutes', 3, 1),
 
 -- Reporte para el Spot 2 (Alguien reportó ocupado, y otro usuario lo confirmó)
 (2, 'ocupado', NOW() - INTERVAL '10 minutes', NOW() + INTERVAL '10 minutes', 2, 0),
@@ -36,7 +36,6 @@ INSERT INTO restricciones (spot_id, tipo_restriccion, dia_semana, hora_inicio, h
 (1, 'carga_descarga', 2, '06:00:00', '09:00:00', 'Exclusivo carga y descarga de 6 a 9 hs días hábiles.'),
 (1, 'carga_descarga', 3, '06:00:00', '09:00:00', 'Exclusivo carga y descarga de 6 a 9 hs días hábiles.'),
 
--- El spot 3 está sobre una avenida (Independencia), prohibido estacionar días hábiles de 7 a 21 hs
 (3, 'prohibido_estacionar', 1, '07:00:00', '21:00:00', 'Prohibido estacionar días hábiles de 7 a 21 hs (Normativa Avenidas CABA).'),
 (3, 'prohibido_estacionar', 2, '07:00:00', '21:00:00', 'Prohibido estacionar días hábiles de 7 a 21 hs (Normativa Avenidas CABA).'),
 (3, 'prohibido_estacionar', 3, '07:00:00', '21:00:00', 'Prohibido estacionar días hábiles de 7 a 21 hs (Normativa Avenidas CABA).'),
