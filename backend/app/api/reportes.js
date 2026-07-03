@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getReportesBySpot, createReporte, updateReporte, deleteReporte } from "../db/reportes.js";
+import { getReportesBySpot, getReporteById, createReporte, updateReporte, deleteReporte } from "../db/reportes.js";
 
 export const endpointsReportes = Router();
 
@@ -11,6 +11,16 @@ endpointsReportes.get("/", async (req, res) => {
 
   const reportes = await getReportesBySpot(spot_id);
   res.json(reportes);
+});
+
+endpointsReportes.get("/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const reporte = await getReporteById(id);
+  if (!reporte) {
+    return res.status(404).json({ error: "Reporte no encontrado" });
+  }
+  res.json(reporte);
 });
 
 endpointsReportes.post("/", async (req, res) => {
