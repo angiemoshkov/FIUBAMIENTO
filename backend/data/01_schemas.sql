@@ -3,8 +3,8 @@ CREATE TABLE spots (
     latitud DECIMAL(10, 8) NOT NULL,
     longitud DECIMAL(11, 8) NOT NULL,
     direccion_aproximada VARCHAR(100) NOT NULL,
-    estado_actual VARCHAR(50) NOT NULL DEFAULT 'ocupado',
-    ultima_actualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP 
+    referencia VARCHAR (150) NOT NULL,
+    fecha_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE reportes (

@@ -3,11 +3,11 @@ import { db } from "../db/pool.js";
 //---CRUD completo, respetando el orden de las siglas"---//
 
 //CREATE
-export async function createSpot(latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) {
+export async function createSpot(latitud, longitud, direccion_aproximada, referencia) {
   const res = await db.query(
-    `INSERT INTO spots (latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) 
-    VALUES ($1, $2, $3, $4, $5)`,
-    [latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion],
+    `INSERT INTO spots (latitud, longitud, direccion_aproximada, referencia) 
+    VALUES ($1, $2, $3, $4)`,
+    [latitud, longitud, direccion_aproximada, referencia],
   );
 
   return res.rowCount == 1;
@@ -31,10 +31,10 @@ export async function getSpot(id) {
 }
 
 //UPDATE
-export async function updateSpot(id, latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion) {
+export async function updateSpot(id, latitud, longitud, direccion_aproximada, referencia) {
   const res = await db.query(
-    `UPDATE spots SET latitud=$1, longitud=$2, direccion_aproximada=$3, estado_actual=$4, ultima_actualizacion=$5 WHERE id = $6`,
-    [latitud, longitud, direccion_aproximada, estado_actual, ultima_actualizacion, id],
+    `UPDATE spots SET latitud=$1, longitud=$2, direccion_aproximada=$3, referencia=$4 WHERE id = $5`,
+    [latitud, longitud, direccion_aproximada, referencia, id],
   );
 
   return res.rowCount == 1;
