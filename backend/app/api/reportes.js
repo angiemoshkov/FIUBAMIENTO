@@ -13,6 +13,7 @@ endpointsReportes.get("/", async (req, res) => {
   res.json(reportes);
 });
 
+
 endpointsReportes.get("/:id", async (req, res) => {
   const id = req.params.id;
 
@@ -23,6 +24,7 @@ endpointsReportes.get("/:id", async (req, res) => {
   res.json(reporte);
 });
 
+
 endpointsReportes.post("/", async (req, res) => {
   const { spot_id, estado_reportado } = req.body;
 
@@ -30,14 +32,15 @@ endpointsReportes.post("/", async (req, res) => {
     return res.status(400).json({ error: "spot_id y estado_reportado son obligatorios" });
   }
 
-  const estados_validos = ["libre", "ocupado", "me_yendo"];
+  const estados_validos = ["libre", "ocupado"];
   if (!estados_validos.includes(estado_reportado)) {
-    return res.status(400).json({ error: "estado_reportado debe ser: libre, ocupado o me_yendo" });
+    return res.status(400).json({ error: "estado_reportado debe ser libre u ocupado" });
   }
 
   const reporte = await createReporte(spot_id, estado_reportado);
   res.status(201).json(reporte);
 });
+
 
 endpointsReportes.put("/:id", async (req, res) => {
   const id = req.params.id;
@@ -47,9 +50,9 @@ endpointsReportes.put("/:id", async (req, res) => {
     return res.status(400).json({ error: "estado_reportado es obligatorio" });
   }
 
-  const estados_validos = ["libre", "ocupado", "me_yendo"];
+  const estados_validos = ["libre", "ocupado"];
   if (!estados_validos.includes(estado_reportado)) {
-    return res.status(400).json({ error: "estado_reportado debe ser: libre, ocupado o me_yendo" });
+    return res.status(400).json({ error: "estado_reportado debe ser libre u ocupado"});
   }
 
   const reporte = await updateReporte(id, estado_reportado);
@@ -59,12 +62,13 @@ endpointsReportes.put("/:id", async (req, res) => {
   res.json(reporte);
 });
 
+
 endpointsReportes.delete("/:id", async (req, res) => {
   const id = req.params.id;
 
   const eliminado = await deleteReporte(id);
   if (!eliminado) {
-    return res.status(404).json({ error: "Reporte no encontrado" });
+    return res.status(404).json({ error: "Reporte no encontrado, por lo que no se pudo eliminar" });
   }
   res.json({ mensaje: "Reporte eliminado" });
 });
