@@ -16,7 +16,7 @@ export async function createRestriccion(spot_id, tipo_restriccion, dia_semana, h
 //READ
 export async function getAllRestricciones(spot_id) {
   const res = await db.query(
-    `SELECT * FROM restricciones,
+    `SELECT * FROM restricciones
      WHERE spot_id = $1;`,
      [spot_id],
   );

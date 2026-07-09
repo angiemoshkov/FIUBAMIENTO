@@ -11,14 +11,14 @@ export const endpointsRestricciones = Router();
 
 endpointsRestricciones.post("/", async (req, res) => {
   try {
-    const { spot_id, tipo_restriccion, dia_semana, hora_inicio, hora_fin, descripcion } = req.body;
+    const { spot_id, tipo, dia_semana, hora_inicio, hora_fin, descripcion } = req.body;
 
     if (!spot_id || isNaN(Number(spot_id))) {
       return res.status(400).json({ error: "El campo 'spot_id' es obligatorio y debe ser un número" });
     }
 
-    if (tipo_restriccion === undefined || tipo_restriccion === null || tipo_restriccion.trim() === "" || tipo_restriccion.length > 100) {
-      return res.status(400).json({ error: "El campo tipo_restriccion es obligatorio (máx 100 caracteres)" });
+    if (tipo === undefined || tipo === null || tipo.trim() === "" || tipo.length > 100) {
+      return res.status(400).json({ error: "El campo tipo es obligatorio (máx 100 caracteres)" });
     }
 
     if (dia_semana === undefined || isNaN(Number(dia_semana))) {
@@ -31,7 +31,7 @@ endpointsRestricciones.post("/", async (req, res) => {
 
     const created = await createRestriccion(
       spot_id,
-      tipo_restriccion,
+      tipo,
       dia_semana,
       hora_inicio,
       hora_fin,
@@ -44,7 +44,7 @@ endpointsRestricciones.post("/", async (req, res) => {
 
     return res.status(201).json({
       spot_id,
-      tipo_restriccion,
+      tipo,
       dia_semana,
       hora_inicio,
       hora_fin,
@@ -90,16 +90,16 @@ endpointsRestricciones.get("/:id", async (req, res) => {
 endpointsRestricciones.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { tipo_restriccion, dia_semana, hora_inicio, hora_fin, descripcion } = req.body;
+    const { tipo, dia_semana, hora_inicio, hora_fin, descripcion } = req.body;
 
-    if (!tipo_restriccion || tipo_restriccion.length > 100) {
-      return res.status(400).json({ error: "El campo 'tipo_restriccion' es obligatorio (max 100 caracteres)" });
+    if (!tipo || tipo.length > 100) {
+      return res.status(400).json({ error: "El campo 'tipo' es obligatorio (max 100 caracteres)" });
     }
     if (dia_semana === undefined || isNaN(Number(dia_semana))) {
       return res.status(400).json({ error: "El campo 'dia_semana' debe ser un número" });
     }
 
-    const updated = await updateRestriccion(id, tipo_restriccion, dia_semana, hora_inicio, hora_fin, descripcion);
+    const updated = await updateRestriccion(id, tipo, dia_semana, hora_inicio, hora_fin, descripcion);
 
     if (!updated) {
       return res.status(404).json({ error: "No se encontró la restricción para actualizar" });
