@@ -14,21 +14,27 @@
         </header>
         <main>
 
-             <div id="map"></div>
-                <template id="popup-template">
-                    <div class="spot-popup">
-                        <b class="popup-direccion"></b><br>
-                        <span class="popup-estado">Estado: <strong></strong></span>
-                        
-                        <hr class="popup-divider">
-                        
-                        <div class="popup-botones">
-                            <a href="#" class="btn-restricciones" target="_blank">📋 Ver Restricciones</a>
-                            <a href="#" class="btn-maps" target="_blank">📍 Cómo llegar (Google Maps)</a>
-                        </div>
-                    </div>
-                </template>
+            <div id="map"></div>
 
+            <template id="popup-template">
+                <div class="spot-popup">
+                    <p class="popup-direccion"></p>
+                    <p class="popup-estado">Estado: <strong></strong></p>
+                    
+                    <hr class="popup-divider">
+
+                    <!-- Contenedor flex con las etiquetas de tus enlaces originales -->
+                    <div class="container-acciones">
+                        <a class="btn-marcar-libre btn-maps" href="#">Libre</a>
+                        <a class="btn-marcar-ocupado id btn-restricciones" href="#">Ocupado</a>
+                    </div>
+                    
+                    <div class="popup-botones">
+                        <a class="btn-ver-reportes btn-restricciones" href="#">Ver reportes</a>
+                        <a class="btn-maps" target="_blank" href="#">Cómo llegar</a>
+                    </div>
+                </div>
+            </template>
 
         </main>
         <footer>
