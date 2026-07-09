@@ -13,4 +13,6 @@ __pycache__/
 # Datos persistentes de la base (los genera Postgres al levantar)
 backend/db_data/
 
+cambios_0206.txt
+
 diseno_fiubamiento.odt

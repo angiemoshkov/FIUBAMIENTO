@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Función para el botón manual del buscador
-async function buscarRestriccionesManual() {
+async function buscarRestricciones() {
     const spot_id_input = document.getElementById('spot-id-input').value;
     if (!spot_id_input) {
         alert('Ingresá un Spot ID');

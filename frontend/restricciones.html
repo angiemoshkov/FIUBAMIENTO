@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restricciones</title>
+    <!-- Bulma CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
 </head>
 <body>
@@ -11,18 +12,37 @@
         <div class="container">
             <h1 class="title">Restricciones de estacionamiento</h1>
 
-            <div class="field">
-                <label class="label">Filtrar por Spot ID</label>
-                <div class="control">
+            <!-- Campo de búsqueda -->
+            <div class="field has-addons">
+                <div class="control is-expanded">
                     <input class="input" type="number" id="spot-id-input" placeholder="Ej: 1">
                 </div>
+                <div class="control">
+                    <button class="button is-primary" onclick="buscarRestricciones()">Buscar</button>
+                </div>
             </div>
-            <button class="button is-primary" onclick="buscarRestricciones()">Buscar</button>
 
-            <table class="table is-fullwidth is-striped mt-4" id="tabla-restricciones">
+            <!-- Tabla de datos -->
+            <table class="table is-fullwidth is-striped mt-4">
                 <thead>
                     <tr>
                         <th>Spot ID</th>
                         <th>Tipo</th>
                         <th>Día</th>
                         <th>Hora inicio</th>
+                        <th>Hora fin</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <!-- Importante: Este ID debe coincidir con tu JS -->
+                <tbody id="body-restricciones">
+                    <!-- Aquí se inyectarán las filas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Asegúrate de enlazar tu archivo JS aquí -->
+    <script src="js/restricciones.js"></script>
+</body>
+</html>
