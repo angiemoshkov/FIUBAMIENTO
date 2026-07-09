@@ -12,62 +12,84 @@ fiubaMarker.bindPopup("<b>Sede Paseo Colón</b><br>Zonas de estacionamiento alre
 setTimeout(() => { map.invalidateSize(); }, 100);
 
 async function cargarSpots() {
-    const responseSpots = await fetch('http://localhost:3000/api/v1/spots');
-    const spotsDesdeBaseDeDatos = await responseSpots.json();
+    try {
+        const responseSpots = await fetch('http://localhost:3000/api/v1/spots');
+        const spotsDesdeBaseDeDatos = await responseSpots.json();
 
-    const spotsConEstado = await Promise.all(spotsDesdeBaseDeDatos.map(async (spot) => {
-        try {
-            const responseReportes = await fetch(`http://localhost:3000/api/v1/restricciones?spot_id=${spot.id}`);
-            const restricciones = await responseReportes.json();
-            
-            let estadoActual = 'sin_informacion';
-            if (restricciones && restricciones.length > 0) {
-                estadoActual = restricciones[restricciones.length - 1].estado_reportado || 'sin_informacion';
-            }
-            
-            return { ...spot, estadoActual };
-        } catch (error) {
-            return { ...spot, estadoActual: 'sin_informacion' };
+        console.log("Datos recibidos de la API:", spotsDesdeBaseDeDatos);
+
+        const template = document.getElementById('popup-template');
+
+        console.log("Elemento template encontrado:", template);
+
+        if (spotsDesdeBaseDeDatos.length === 0) {
+            console.warn("Ojo: El array de spots está vacío []. No hay nada que dibujar.");
         }
-    }));
 
-    // Obtenemos la plantilla HTML una sola vez
-    const template = document.getElementById('popup-template');
+        const configuracionEstados = {
+            'ocupado': { color: '#e74c3c', texto: 'Ocupado' },
+            'libre': { color: '#2ecc71', texto: 'Libre' },
+            'restringido': { color: '#f1c40f', texto: 'Restringido' },
+            'sin_informacion_reciente': { color: '#95a5a6', texto: 'Sin información reciente' }
+        };
 
-    spotsConEstado.forEach(spot => {
-        let colorFinal = '#95a5a6';
-        let textoEstado = 'Sin información';
+        // Limpiamos marcadores previos si es necesario (depende de tu setup de Leaflet)
+        // map.eachLayer(...); 
 
-        if (spot.estadoActual === 'ocupado') { colorFinal = '#e74c3c'; textoEstado = 'Ocupado'; }
-        else if (spot.estadoActual === 'libre') { colorFinal = '#2ecc71'; textoEstado = 'Libre'; }
-        else if (spot.estadoActual === 'me_yendo') { colorFinal = '#f1c40f'; textoEstado = 'Me yendo'; }
+        spotsDesdeBaseDeDatos.forEach(spot => {
 
-        // Armamos las URLs
-        const urlRestricciones = `restricciones.html?spot_id=${spot.id}`;
-        const urlGoogleMaps = `https://www.google.com/maps/dir/?api=1&destination=${spot.latitud},${spot.longitud}`;
+            console.log(`Dibujando spot ID: ${spot.id} en lat: ${spot.latitud} (${typeof spot.latitud}), lng: ${spot.longitud}`);
 
-        // 1. Clonamos el contenido de la plantilla
-        const popupContent = template.content.cloneNode(true);
+            const estadoKey = spot.estado || 'sin_informacion_reciente';
+            const infoEstado = configuracionEstados[estadoKey] || configuracionEstados['sin_informacion_reciente'];
 
-        // 2. Rellenamos los datos buscando por clase
-        popupContent.querySelector('.popup-direccion').textContent = spot.direccion_aproximada;
-        popupContent.querySelector('.popup-estado strong').textContent = textoEstado;
-        popupContent.querySelector('.btn-restricciones').href = urlRestricciones;
-        popupContent.querySelector('.btn-maps').href = urlGoogleMaps;
+            // URLs de navegación
+            const urlReportesPagina = `reportes.html?spot_id=${spot.id}`;
+            const urlGoogleMaps = `https://www.google.com/maps/dir/?api=1&destination=${spot.latitud},${spot.longitud}`;
 
-        // 3. Leaflet necesita un contenedor Div real, así que envolvemos el fragmento clonado
-        const popupDiv = document.createElement('div');
-        popupDiv.appendChild(popupContent);
+            // 1. Clonamos la plantilla
+            const popupContent = template.content.cloneNode(true);
 
-        // 4. Dibujamos el punto y le pasamos el elemento HTML (popupDiv) en lugar de un string
-        L.circleMarker([spot.latitud, spot.longitud], {
-            radius: 6,
-            fillColor: colorFinal,
-            color: "#ffffff",
-            weight: 2,
-            fillOpacity: 0.9
-        }).addTo(map).bindPopup(popupDiv);
-    });
+            // 2. Rellenamos la información básica
+            popupContent.querySelector('.popup-direccion').textContent = spot.direccion_aproximada;
+            popupContent.querySelector('.popup-estado strong').textContent = infoEstado.texto;
+            popupContent.querySelector('.btn-maps').href = urlGoogleMaps;
+            
+            // FUNCIONALIDAD 3: Botón que redirige a la página de reportes propia del spot
+            popupContent.querySelector('.btn-ver-reportes').href = urlReportesPagina;
+
+            // FUNCIONALIDAD 1 y 2: Capturamos los botones de acción rápida
+            const btnOcupado = popupContent.querySelector('.btn-marcar-ocupado');
+            const btnLibre = popupContent.querySelector('.btn-marcar-libre');
+
+            // Escuchamos los clicks y disparamos nuestra función inteligente
+            btnOcupado.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                gestionarReporte(spot, 'ocupado');
+            });
+
+            btnLibre.addEventListener('click', (e) => {
+                e.preventDefault();
+                gestionarReporte(spot, 'libre');
+            });
+
+            // 3. Envoltura para Leaflet
+            const popupDiv = document.createElement('div');
+            popupDiv.appendChild(popupContent);
+
+            // 4. Dibujamos en el mapa
+            L.circleMarker([spot.latitud, spot.longitud], {
+                radius: 6,
+                fillColor: infoEstado.color,
+                color: "#ffffff",
+                weight: 2,
+                fillOpacity: 0.9
+            }).addTo(map).bindPopup(popupDiv);
+        });
+    } catch (error) {
+        console.error("Error al cargar o procesar los spots:", error);
+    }
 }
 
+console.log("Llamando a cargarSpots()..."); // <-- Fuera de todo
 cargarSpots();

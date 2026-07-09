@@ -33,18 +33,58 @@ html, body {
     border: none; /* Le sacamos el borde para que sea continuo */
 }
 
-.spot-popup { text-align: center; font-family: Arial, sans-serif; min-width: 150px; }
-    .spot-popup .popup-direccion { font-size: 14px; }
-    .spot-popup .popup-estado { font-size: 12px; color: #555; }
-    .spot-popup .popup-divider { margin: 10px 0; border: 0; border-top: 1px solid #ccc; }
-    .spot-popup .popup-botones { display: flex; flex-direction: column; gap: 8px; }
-    
-    .spot-popup a {
-        color: white; 
-        padding: 6px; 
-        text-decoration: none; 
-        border-radius: 4px; 
-        font-size: 12px;
-    }
-    .btn-restricciones { background-color: #3498db; }
-    .btn-maps { background-color: #27ae60; }
+.spot-popup {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    min-width: 150px;
+}
+
+.spot-popup .popup-direccion {
+    font-size: 14px;
+}
+
+.spot-popup .popup-estado {
+    font-size: 12px;
+    color: #555;
+}
+
+.spot-popup .popup-divider {
+    margin: 10px 0;
+    border: 0;
+    border-top: 1px solid #ccc;
+}
+
+/* El contenedor mantiene los botones lado a lado */
+.container-acciones {
+    display: flex;
+    gap: 8px;           
+    margin: 12px 0;     
+}
+
+/* Devolvemos el estilo original: ahora los elementos son enlaces <a> */
+.spot-popup a, 
+.container-acciones a {
+    flex: 1; /* Hace que midan lo mismo lado a lado */
+    color: white; 
+    padding: 6px; 
+    text-decoration: none; 
+    border-radius: 4px; 
+    font-size: 12px;
+    text-align: center;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+/* Colores originales basados en tus primeras clases */
+.btn-restricciones { 
+    background-color: #3498db; 
+}
+
+.btn-maps { 
+    background-color: #27ae60; 
+}
+
+/* Opcional: una leve respuesta visual al pasar el cursor */
+.spot-popup a:hover {
+    opacity: 0.9;
+}
