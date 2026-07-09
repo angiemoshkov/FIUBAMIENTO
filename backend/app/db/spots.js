@@ -14,9 +14,21 @@ export async function createSpot(latitud, longitud, direccion_aproximada, refere
 }
 
 //READ
-export async function getAllSpots() {
+export async function getAllSpots(dia_semana, hora) {
   const res = await db.query(
-    "SELECT * FROM spots",
+  `SELECT s.id, s.latitud, s.longitud, s.direccion_aproximada, s.referencia,
+  (SELECT COUNT(*) FROM restricciones r
+    WHERE r.spot_id = s.id
+    AND r.dia_semana = $1
+    AND $2 BETWEEN r.hora_inicio AND r.hora_fin) AS restricciones_activas,
+  
+  (SELECT rep.estado_reportado FROM reportes rep
+    WHERE rep.spot_id = s.id
+    AND rep.fecha_expiracion > NOW()
+    ORDER BY rep.fecha_creacion DESC 
+    LIMIT 1) AS estado_reportado
+  FROM spots s
+  `, [dia_semana, hora],
   );
   return res.rows;
 }

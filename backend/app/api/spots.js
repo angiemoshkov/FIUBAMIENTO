@@ -51,7 +51,23 @@ endpointsSpots.post("/", async (req, res) => {
 
 //READ
 endpointsSpots.get("/", async (req, res) => {
-  const spots = await getAllSpots();
+  
+  let dia_semana = new Date().getDay();
+  if (dia_semana === 0)
+      dia_semana = 7;
+  const hora = new Date().toTimeString().slice(0, 8);
+
+  const spots = await getAllSpots(dia_semana, hora);
+
+  for (const spot of spots) {
+    if (spot.restricciones_activas > 0)
+        spot.estado = 'restringido';
+    else if (spot.estado_reportado === null)
+        spot.estado = 'sin_informacion_reciente';
+    else 
+        spot.estado = spot.estado_reportado;
+  }
+
   res.json(spots);
 });
 
