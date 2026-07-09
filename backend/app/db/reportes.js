@@ -2,7 +2,7 @@ import { db } from "./pool.js";
 
 export async function getReportesBySpot(spot_id) {
   const res = await db.query(
-    `SELECT id, spot_id, estado_reportado, fecha_creacion, fecha_expiracion, confianza_positiva, confianza_negativa
+    `SELECT id, spot_id, estado_reportado, fecha_creacion, fecha_expiracion, veces_libre, veces_ocupado
      FROM reportes
      WHERE spot_id = $1
      ORDER BY fecha_creacion DESC`,
@@ -13,7 +13,7 @@ export async function getReportesBySpot(spot_id) {
 
 export async function getReporteById(id) {
   const res = await db.query(
-    `SELECT id, spot_id, estado_reportado, fecha_creacion, fecha_expiracion, confianza_positiva, confianza_negativa
+    `SELECT id, spot_id, estado_reportado, fecha_creacion, fecha_expiracion, veces_libre, veces_ocupado
      FROM reportes
      WHERE id = $1`,
     [id]
