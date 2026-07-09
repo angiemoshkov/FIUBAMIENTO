@@ -21,14 +21,11 @@ INSERT INTO spots (latitud, longitud, direccion_aproximada, referencia, fecha_re
 (-34.6165831, -58.3700727, 'Calle San Lorenzo', 'Esquina con Balcarce', NOW());
 
 INSERT INTO reportes (spot_id, estado_reportado, fecha_creacion, fecha_expiracion, veces_libre, veces_ocupado) VALUES
--- Reporte para el Spot 1 (Alguien vio que se liberó hace un ratito, expira en 20 min)
-(1, 'libre', NOW() - INTERVAL '5 minutes', NOW() + INTERVAL '15 minutes', 3, 1),
+(1, 'libre', NOW(), NOW() + INTERVAL '3 hours', 3, 1),
 
--- Reporte para el Spot 2 (Alguien reportó ocupado, y otro usuario lo confirmó)
-(2, 'ocupado', NOW() - INTERVAL '10 minutes', NOW() + INTERVAL '10 minutes', 2, 0),
+(2, 'ocupado', NOW(), NOW() + INTERVAL '3 hours', 0, 2),
 
--- Reporte para el Spot 3 (reportado como libre por un usuario)
-(3, 'libre', NOW(), NOW() + INTERVAL '20 minutes', 1, 0); --me_yendo no tenia sentido, ya que se libera cuando se va, quedando como libre
+(3, 'libre', NOW(), NOW() + INTERVAL '3 hours', 1, 0);
 
 INSERT INTO restricciones (spot_id, tipo, dia_semana, hora_inicio, hora_fin, descripcion) VALUES
 -- El spot 1 tiene restricción de carga y descarga temprano por la mañana (Lunes a Viernes)
