@@ -1,21 +1,50 @@
 #titulo {
-   position: absolute;   /* 1. Lo despega del flujo normal y lo hace flotar */
-    top: 20px;            /* 2. Separación de 20px desde el techo de la pantalla */
-    left: 50%;            /* 3. Lo movemos al centro... */
-    transform: translateX(-50%); /* ...y lo centramos perfectamente respecto a sí mismo */
+    position: absolute;   
+    top: 20px;            
+    left: 50%;            
+    transform: translateX(-50%); 
     
-    z-index: 1000;        /* 4. Obligatorio: Leaflet usa z-index altos. Con 1000 nos aseguramos quedar ARRIBA del mapa */
+    z-index: 1000;        
     
-    /* Diseño físico de la "isla" */
-    background-color: rgba(255, 255, 255, 0.95); /* Blanco con un pelín de transparencia */
-    padding: 10px 30px;   /* Espaciado interno (alto y ancho) */
-    border-radius: 30px;  /* Bordes bien redondeados estilo píldora/isla */
+    background-color: rgba(255, 255, 255, 0.95); 
+    padding: 10px 25px;   /* Ajusté un poco el padding lateral */
+    border-radius: 30px;  
     
-    /* Sombra suave para darle efecto de profundidad (que parezca despegado del mapa) */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
-    
-    /* Evita que la isla estorbe si el usuario quiere hacer clic justo debajo de ella en el mapa */
-    pointer-events: none;
+    pointer-events: none; /* Evita que la isla estorbe al hacer clic en el mapa... */
+
+    /* NUEVO: Convierte el contenedor en una fila flexible */
+    display: flex;
+    align-items: center;  /* Centra verticalmente el texto y el botón */
+    gap: 15px;            /* Espacio exacto de separación entre el texto y el botón */
+}
+
+/* Estilo para el texto dentro de la isla */
+.texto-titulo {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Ajustes específicos para tu botón dentro de la isla */
+#btn-activar-creacion {
+    pointer-events: auto; /* ¡CRÍTICAL! Le devuelve los clics al botón ignorando el 'none' del padre */
+    cursor: pointer;
+    padding: 6px 15px;
+    border: none;
+    background-color: #2ecc71; /* Color verde inicial */
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+#btn-activar-creacion:hover {
+    background-color: #27ae60; /* Un verde un poco más oscuro al pasar el mouse */
+}
+
+#btn-activar-creacion:active {
+    transform: scale(0.95); /* Efecto visual de hundimiento al clickear */
 }
 
 html, body {
@@ -26,6 +55,44 @@ html, body {
     overflow: hidden;
 }
 
+.formulario-creacion {
+    min-width: 200px;
+    text-align: left;
+}
+
+.titulo-creacion {
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.label-creacion {
+    font-size: 11px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.input-creacion {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; 
+}
+
+.input-creacion:last-of-type {
+    margin-bottom: 12px;
+}
+
+.btn-guardar {
+    display: block;
+    padding: 6px;
+    text-align: center;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
 
 #map {
    width: 100vw;   /* Ocupá el 100% del ancho de la ventana del navegador */
@@ -33,58 +100,103 @@ html, body {
     border: none; /* Le sacamos el borde para que sea continuo */
 }
 
+/* Contenedor general del popup */
 .spot-popup {
-    text-align: center;
+    min-width: 220px;
     font-family: Arial, sans-serif;
-    min-width: 150px;
+    color: #333;
+    padding: 4px;
 }
 
-.spot-popup .popup-direccion {
+/* Título con la dirección */
+.popup-direccion {
+    margin: 0 0 6px 0;
     font-size: 14px;
+    font-weight: bold;
+    line-height: 1.3;
 }
 
-.spot-popup .popup-estado {
+/* Párrafo del estado actual */
+.popup-estado {
+    margin: 0 0 12px 0;
     font-size: 12px;
-    color: #555;
+    color: #666;
 }
 
-.spot-popup .popup-divider {
-    margin: 10px 0;
-    border: 0;
-    border-top: 1px solid #ccc;
+.popup-estado strong {
+    font-size: 13px;
+    text-transform: uppercase;
 }
 
-/* El contenedor mantiene los botones lado a lado */
-.container-acciones {
+/* Contenedor de botones de reporte rápido (Lado a Lado) */
+.popup-acciones-rapidas {
     display: flex;
-    gap: 8px;           
-    margin: 12px 0;     
+    gap: 8px;
+    margin-bottom: 12px;
 }
 
-/* Devolvemos el estilo original: ahora los elementos son enlaces <a> */
-.spot-popup a, 
-.container-acciones a {
-    flex: 1; /* Hace que midan lo mismo lado a lado */
-    color: white; 
-    padding: 6px; 
-    text-decoration: none; 
-    border-radius: 4px; 
-    font-size: 12px;
-    text-align: center;
-    font-weight: normal;
+.btn-accion {
+    flex: 1;
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-/* Colores originales basados en tus primeras clases */
-.btn-restricciones { 
-    background-color: #3498db; 
+/* Botones específicos de reporte rápido */
+.btn-marcar-libre {
+    background-color: #2ecc71;
+    color: white;
+}
+.btn-marcar-libre:hover {
+    background-color: #27ae60;
 }
 
-.btn-maps { 
-    background-color: #27ae60; 
+.btn-marcar-ocupado {
+    background-color: #e74c3c;
+    color: white;
+}
+.btn-marcar-ocupado:hover {
+    background-color: #c0392b;
 }
 
-/* Opcional: una leve respuesta visual al pasar el cursor */
-.spot-popup a:hover {
-    opacity: 0.9;
+/* Bloque de enlaces inferiores (Uno abajo del otro) */
+.popup-enlaces {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.btn-maps, .btn-ver-reportes {
+    display: block;
+    text-align: center;
+    padding: 6px;
+    font-size: 12px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Enlace a Google Maps */
+.btn-maps {
+    background-color: #3498db;
+    color: white;
+}
+.btn-maps:hover {
+    background-color: #2980b9;
+}
+
+/* Enlace a tu historial interno */
+.btn-ver-reportes {
+    background-color: #f4f6f7;
+    color: #566573;
+    border: 1px solid #d5dbdb;
+}
+.btn-ver-reportes:hover {
+    background-color: #ebedef;
+    color: #2c3e50;
 }
