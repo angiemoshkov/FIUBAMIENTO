@@ -14,20 +14,23 @@
                 <button id="btn-activar-creacion"> + </button>
             </div>
 
-            <template id="popup-template">
-                <div class="spot-popup">
-                    <h3 class="popup-direccion">Cargando dirección...</h3>
+            <template id="nuevo-spot-template">
+                <div class="spot-popup formulario-creacion">
+                    <h4 class="titulo-creacion">Registrar Nuevo Punto</h4>
                     
-                    <p class="popup-estado">Estado actual: <strong>Cargando...</strong></p>
-                    
-                    <div class="popup-acciones-rapidas">
-                        <button class="btn-accion btn-marcar-libre">Marcar Libre</button>
-                        <button class="btn-accion btn-marcar-ocupado">Marcar Ocupado</button>
+                    <div class="grupo-input">
+                        <label class="label-creacion" for="ins-direccion">Dirección aproximada:</label>
+                        <input type="text" id="ins-direccion" placeholder="Ej. Av. Paseo Colón 850" class="input-creacion" required>
                     </div>
-
-                    <div class="popup-enlaces">
-                        <a href="#" target="_blank" class="btn-maps">¿Cómo llegar?</a>
-                        <a href="#" class="btn-ver-reportes">Historial de Reportes</a>
+                    
+                    <div class="grupo-input">
+                        <label class="label-creacion" for="ins-referencia">Referencia / Descripción:</label>
+                        <input type="text" id="ins-referencia" placeholder="Ej. Cerca de la entrada principal" class="input-creacion" required>
+                    </div>
+                    
+                    <div class="container-acciones">
+                        <!-- Cambiado de <a> a <button> para garantizar compatibilidad con JS y Leaflet -->
+                        <button type="button" id="btn-guardar-spot" class="btn-guardar">Guardar Punto</button>
                     </div>
                 </div>
             </template>
