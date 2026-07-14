@@ -24,7 +24,7 @@ export async function getReporteById(id) {
 export async function createReporte(spot_id, estado_reportado) {
   const res = await db.query(
     `INSERT INTO reportes (spot_id, estado_reportado, fecha_expiracion)
-     VALUES ($1, $2, NOW() + INTERVAL '20 minutes')
+     VALUES ($1, $2, NOW() + INTERVAL '3 hours')
      RETURNING *`,
     [spot_id, estado_reportado]
   );
@@ -34,7 +34,7 @@ export async function createReporte(spot_id, estado_reportado) {
 export async function updateReporte(id, estado_reportado) {
   const res = await db.query(
     `UPDATE reportes
-     SET estado_reportado = $1, fecha_expiracion = NOW() + INTERVAL '20 minutes'
+     SET estado_reportado = $1, fecha_expiracion = NOW() + INTERVAL '3 hours'
      WHERE id = $2
      RETURNING *`,
     [estado_reportado, id]
