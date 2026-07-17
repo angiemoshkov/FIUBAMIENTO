@@ -151,3 +151,27 @@ header {
     cursor: pointer;
     margin-top: 10px;
 }
+
+
+.acciones-cabecera {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.btn-agregar {
+    background-color: #2ecc71; /* Verde llamativo */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.btn-agregar:hover {
+    background-color: #27ae60;
+}

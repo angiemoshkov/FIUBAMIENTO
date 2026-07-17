@@ -147,11 +147,68 @@ function configurarModal(spotId) {
 }
 
 function abrirModal(id) {
-    reporteAEditarId = id; // Guardamos el ID del reporte que se clickeó
+    reporteAEditarId = id;
     document.getElementById('modal-editar').classList.remove('oculto');
 }
 
 function cerrarModal() {
     reporteAEditarId = null;
     document.getElementById('modal-editar').classList.add('oculto');
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const parametrosUrl = new URLSearchParams(window.location.search);
+    const spotId = parametrosUrl.get('spot_id');
+    
+
+    if (spotId) {
+        configurarModalCrear(spotId);
+    }
+});
+
+
+function configurarModalCrear(spotId) {
+    const modalCrear = document.getElementById('modal-crear');
+    const btnAbrirCrear = document.getElementById('btn-abrir-crear');
+    const btnCerrarCrear = document.getElementById('btn-cerrar-crear');
+    const btnCrearLibre = document.getElementById('btn-crear-libre');
+    const btnCrearOcupado = document.getElementById('btn-crear-ocupado');
+
+    btnAbrirCrear.addEventListener('click', () => {
+        modalCrear.classList.remove('oculto');
+    });
+
+    btnCerrarCrear.addEventListener('click', () => {
+        modalCrear.classList.add('oculto');
+    });
+
+    btnCrearLibre.addEventListener('click', () => guardarNuevoReporte('libre', spotId));
+    btnCrearOcupado.addEventListener('click', () => guardarNuevoReporte('ocupado', spotId));
+}
+
+async function guardarNuevoReporte(estado, spotId) {
+    try {
+        const response = await fetch('http://localhost:3000/api/v1/reportes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                spot_id: parseInt(spotId),
+                estado_reportado: estado
+            })
+        });
+
+        if (response.ok) {
+            document.getElementById('modal-crear').classList.add('oculto');
+            cargarReportes(spotId);
+        } else {
+            const errorData = await response.json();
+            alert(`Error al crear el reporte: ${errorData.error || 'Error desconocido'}`);
+        }
+    } catch (error) {
+        console.error("Error en POST /reportes:", error);
+        alert("No se pudo conectar con el servidor para guardar el reporte.");
+    }
 }
