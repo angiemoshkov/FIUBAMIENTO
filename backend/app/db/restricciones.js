@@ -5,7 +5,7 @@ import { db } from "../db/pool.js";
 //CREATE
 export async function createRestriccion(spot_id, tipo_restriccion, dia_semana, hora_inicio, hora_fin, descripcion) {
   const res = await db.query(
-    `INSERT INTO restricciones (spot_id, tipo_restriccion, dia_semana, hora_inicio, hora_fin, descripcion) 
+    `INSERT INTO restricciones (spot_id, tipo, dia_semana, hora_inicio, hora_fin, descripcion)
     VALUES ($1, $2, $3, $4, $5, $6)`,
     [spot_id, tipo_restriccion, dia_semana, hora_inicio, hora_fin, descripcion],
   );
@@ -35,7 +35,7 @@ export async function getRestriccion(id) {
 //UPDATE
 export async function updateRestriccion(id, tipo_restriccion, dia_semana, hora_inicio, hora_fin, descripcion) {
   const res = await db.query(
-    `UPDATE restricciones SET tipo_restricciones=$1, dia_semana=$2, hora_inicio=$3, hora_fin=$4, descripcion=$5 WHERE id = $6`,
+    `UPDATE restricciones SET tipo=$1, dia_semana=$2, hora_inicio=$3, hora_fin=$4, descripcion=$5 WHERE id = $6`,
     [tipo_restriccion, dia_semana, hora_inicio, hora_fin, descripcion, id],
   );
 
