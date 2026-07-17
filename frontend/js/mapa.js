@@ -25,7 +25,6 @@ document.getElementById('btn-activar-creacion').addEventListener('click', functi
         this.style.backgroundColor = '#e74c3c'; 
         this.textContent = 'Cancelar Creación';
         document.getElementById('map').style.cursor = 'crosshair'; 
-        alert('Haz clic en cualquier punto del mapa para ubicar el nuevo spot.');
     } else {
         desactivarModoCreacion();
     }
@@ -48,21 +47,18 @@ function calcularDistanciaMetros(lat1, lon1, lat2, lon2) {
     return radioTierraMetros * c;
 }
 
-// Escuchamos los clics en el mapa de Leaflet (Corregido: una sola declaración)
 map.on('click', function(e) {
     if (!modoCreacionActivo) return;
 
     const lat = e.latlng.lat;
     const lng = e.latlng.lng;
 
-    // COORDENADAS DE TU FACULTAD
     const FACULTAD_LAT = -34.61765;
     const FACULTAD_LNG = -58.36831;
 
-    // Calculamos la distancia entre el click y la facultad
     const distanciaAFacultad = calcularDistanciaMetros(lat, lng, FACULTAD_LAT, FACULTAD_LNG);
 
-    // CONTROL DE RESTRICCIÓN: Si está a MÁS de 300 metros, bloqueamos
+    //Si está a MÁS de 300 metros, bloqueamos
     if (distanciaAFacultad > 300) {
         alert(`Solo está permitido agregar spots dentro del radio de la Facultad de Ingeniería (máximo 300 metros). Estás a ${Math.round(distanciaAFacultad)} metros.`);
         return; 
@@ -74,13 +70,11 @@ map.on('click', function(e) {
     const contenedorDiv = document.createElement('div');
     contenedorDiv.appendChild(formulario);
 
-    // Creamos y abrimos el popup en las coordenadas clickeadas (Corregido: una sola vez)
     popupCreacionTemporal = L.popup()
         .setLatLng([lat, lng])
         .setContent(contenedorDiv)
         .openOn(map);
 
-    // Vinculamos el evento del botón guardar que está DENTRO del popup
     contenedorDiv.querySelector('#btn-guardar-spot').addEventListener('click', async function(event) {
         event.preventDefault();
 
@@ -110,8 +104,6 @@ map.on('click', function(e) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Error desconocido del servidor');
             }
-
-            alert('¡Spot creado exitosamente!');
             
             map.closePopup(popupCreacionTemporal); 
             desactivarModoCreacion();             
@@ -124,7 +116,6 @@ map.on('click', function(e) {
     });
 });
 
-// Función auxiliar para resetear el Navbar y el comportamiento del mapa
 function desactivarModoCreacion() {
     modoCreacionActivo = false;
     const btnNavbar = document.getElementById('btn-activar-creacion');
@@ -155,9 +146,6 @@ async function cargarSpots() {
             'sin_informacion_reciente': { color: '#95a5a6', texto: 'Sin información reciente' }
         };
 
-        // Limpiamos marcadores previos si es necesario (depende de tu setup de Leaflet)
-        // map.eachLayer(...); 
-
         spotsDesdeBaseDeDatos.forEach(spot => {
 
             console.log(`Dibujando spot ID: ${spot.id} en lat: ${spot.latitud} (${typeof spot.latitud}), lng: ${spot.longitud}`);
@@ -165,26 +153,22 @@ async function cargarSpots() {
             const estadoKey = spot.estado || 'sin_informacion_reciente';
             const infoEstado = configuracionEstados[estadoKey] || configuracionEstados['sin_informacion_reciente'];
 
-            // URLs de navegación
             const urlReportesPagina = `reportes.html?spot_id=${spot.id}`;
+            const urlRestricciones = `restricciones.html?spot_id=${spot.id}`;
             const urlGoogleMaps = `https://www.google.com/maps/dir/?api=1&destination=${spot.latitud},${spot.longitud}`;
 
-            // 1. Clonamos la plantilla
             const popupContent = template.content.cloneNode(true);
 
-            // 2. Rellenamos la información básica
             popupContent.querySelector('.popup-direccion').textContent = spot.direccion_aproximada;
             popupContent.querySelector('.popup-estado strong').textContent = infoEstado.texto;
             popupContent.querySelector('.btn-maps').href = urlGoogleMaps;
             
-            // FUNCIONALIDAD 3: Botón que redirige a la página de reportes propia del spot
             popupContent.querySelector('.btn-ver-reportes').href = urlReportesPagina;
+            popupContent.querySelector('.btn-restricciones').href = urlRestricciones;
 
-            // FUNCIONALIDAD 1 y 2: Capturamos los botones de acción rápida
             const btnOcupado = popupContent.querySelector('.btn-marcar-ocupado');
             const btnLibre = popupContent.querySelector('.btn-marcar-libre');
 
-            // Escuchamos los clicks y disparamos nuestra función inteligente
             btnOcupado.addEventListener('click', (e) => {
                 e.preventDefault(); 
                 gestionarReporte(spot, 'ocupado');
@@ -195,11 +179,9 @@ async function cargarSpots() {
                 gestionarReporte(spot, 'libre');
             });
 
-            // 3. Envoltura para Leaflet
             const popupDiv = document.createElement('div');
             popupDiv.appendChild(popupContent);
 
-            // 4. Dibujamos en el mapa
             L.circleMarker([spot.latitud, spot.longitud], {
                 radius: 6,
                 fillColor: infoEstado.color,
@@ -213,5 +195,4 @@ async function cargarSpots() {
     }
 }
 
-console.log("Llamando a cargarSpots()..."); // <-- Fuera de todo
 cargarSpots();

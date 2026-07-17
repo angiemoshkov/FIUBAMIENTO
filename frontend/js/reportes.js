@@ -14,7 +14,6 @@ async function gestionarReporte(spot, nuevoEstado) {
             });
 
             if (!response.ok) throw new Error('Error al crear el reporte nuevo');
-            alert(`¡Spot marcado como ${nuevoEstado} exitosamente!`);
         } 
         // CONDICIÓN 2: Ocupado o Libre -> PUT (Modificar existente)
         else if (spot.estado === 'ocupado' || spot.estado === 'libre') {
