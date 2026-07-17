@@ -245,12 +245,12 @@ html, body {
 }
 
 /* Botón: Ver reportes */
-.popup-botones .btn-ver-reportes {
+.popup-botones .btn-ver-reportes,.popup-botones .btn-restricciones {
     background-color: #f8f9fa;
     color: #2c3e50;
     border: 1px solid #cbd1d6;
 }
-.popup-botones .btn-ver-reportes:hover {
+.popup-botones .btn-ver-reportes:hover, .popup-botones .btn-restricciones:hover{
     background-color: #e2e6ea;
 }
 
