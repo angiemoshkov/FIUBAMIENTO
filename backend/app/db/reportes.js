@@ -34,7 +34,7 @@ export async function createReporte(spot_id, estado_reportado) {
 export async function updateReporte(id, estado_reportado) {
   const res = await db.query(
     `UPDATE reportes
-     SET estado_reportado = $1, fecha_expiracion = NOW() + INTERVAL '3 hours'
+     SET estado_reportado = $1, fecha_creacion = NOW(), fecha_expiracion = NOW() + INTERVAL '3 hours'
      WHERE id = $2
      RETURNING *`,
     [estado_reportado, id]

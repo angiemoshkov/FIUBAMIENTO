@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes del Spot</title>
+    <link rel="stylesheet" href="css/reportes.css">
+</head>
+<body>
+    <div class="contenedor-principal">
+        <header>
+            <a href="index.html" class="btn-volver">← Volver al mapa</a>
+            <h1>Historial de Reportes</h1>
+            <p id="spot-info">Cargando reportes del Spot...</p>
+        </header>
+
+        <main id="reportes-container">
+            <div class="loader">Cargando datos...</div>
+        </main>
+    </div>
+
+    <!-- NUEVO: Modal oculto para editar -->
+    <div id="modal-editar" class="modal oculto">
+        <div class="modal-contenido">
+            <h3>Editar Reporte</h3>
+            <p>Selecciona el nuevo estado para este reporte:</p>
+            <div class="modal-botones">
+                <button id="btn-modal-libre" class="btn-estado libre">Libre</button>
+                <button id="btn-modal-ocupado" class="btn-estado ocupado">Ocupado</button>
+            </div>
+            <button id="btn-cerrar-modal" class="btn-cancelar">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="js/reportes.js"></script>
+</body>
+</html>
