@@ -1,15 +1,17 @@
 import { Router } from "express";
-import { getReportesBySpot, getReporteById, createReporte, updateReporte, deleteReporte } from "../db/reportes.js";
+import { getReportesBySpot, getAllReportes, getReporteById, createReporte, updateReporte, deleteReporte } from "../db/reportes.js";
 
 export const endpointsReportes = Router();
 
 endpointsReportes.get("/", async (req, res) => {
   const { spot_id } = req.query;
-  if (!spot_id) {
-    return res.status(400).json({ error: "spot_id es obligatorio" });
+
+  if (spot_id) {
+    const reportes = await getReportesBySpot(spot_id);
+    return res.json(reportes);
   }
 
-  const reportes = await getReportesBySpot(spot_id);
+  const reportes = await getAllReportes();
   res.json(reportes);
 });
 
