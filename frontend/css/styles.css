@@ -9,6 +9,7 @@
     background-color: rgba(255, 255, 255, 0.95); 
     padding: 10px 25px;   /* Ajusté un poco el padding lateral */
     border-radius: 30px;  
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
     
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
     pointer-events: none; /* Evita que la isla estorbe al hacer clic en el mapa... */
@@ -45,6 +46,37 @@
 
 #btn-activar-creacion:active {
     transform: scale(0.95); /* Efecto visual de hundimiento al clickear */
+}
+
+#btn-historial {
+    position: absolute;
+    top: 80px;
+    right: 300px;
+    z-index: 1000;
+
+    transform: translateZ(0);
+
+    padding: 20px 25px;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    text-decoration: none;
+
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+#btn-historial:hover {
+    background-color: #ffffffb7; /* Blanco pleno al pasar el mouse */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); /* Sombra un poco más marcada */
+}
+
+#btn-historial:active {
+    transform: translateZ(0) scale(0.95); /* Hundimiento, manteniendo su capa propia */
 }
 
 html, body {
