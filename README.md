@@ -8,11 +8,11 @@ Antes de manejar hasta la zona, cualquier persona puede consultar el mapa y ver 
 
 ## ✨ Funcionalidades
 
-- **Mapa en tiempo casi real** — visualización de lugares de estacionamiento con pines de colores según su estado actual.
-- **Reportes con ciclo de vida** — cualquier usuario puede reportar el estado de un lugar (`libre`, `ocupado`). Los reportes expiran automáticamente si no hay actividad reciente, y el lugar pasa a estado `sin información`.
-- **Confirmaciones y desmentidas** — la comunidad puede votar si un reporte existente sigue siendo válido.
-- **Restricciones horarias** — cada lugar tiene asociadas las reglas vigentes de la zona (horarios prohibidos, carga y descarga, etc.). El sistema combina la disponibilidad reportada con la restricción horaria actual, mostrando una advertencia si el lugar no se puede usar en ese momento aunque esté "libre".
-- **Panel de administración** — ABM completo de lugares y restricciones.
+- **Mapa en tiempo casi real** — visualización de lugares de estacionamiento con círculos de colores según su estado actual.
+- **Reportes con ciclo de vida** — cualquier usuario puede reportar el estado de un lugar (`libre`, `ocupado`). Los reportes expiran automáticamente a las 3 horas, y el lugar pasa a estado `sin información reciente`.
+- **Restricciones horarias** — cada lugar tiene asociadas las reglas vigentes de la zona (horarios prohibidos, carga y descarga, etc.). El sistema combina la disponibilidad reportada con la restricción horaria actual.
+- **Gestión de reportes** — historial de reportes por spot, con posibilidad de editar y eliminar.
+- **Gestión de restricciones** — ABM completo de restricciones horarias por spot.
 
 ---
 
@@ -20,7 +20,7 @@ Antes de manejar hasta la zona, cualquier persona puede consultar el mapa y ver 
 
 | Entidad | Descripción |
 |---|---|
-| `spots` | Lugares de estacionamiento en la calle |
+| `spots` | Lugares de estacionamiento en la calle (datos geográficos) |
 | `reportes` | Estados reportados por la comunidad para cada lugar |
 | `restricciones` | Reglas horarias vigentes asociadas a cada lugar |
 
@@ -40,8 +40,6 @@ Antes de manejar hasta la zona, cualquier persona puede consultar el mapa y ver 
 
 ## 📁 Estructura del proyecto
 
-> ⚠️ Se está migrando gradualmente a las entidades reales de FIUBAMIENTO (`spots`, `reportes`, `restricciones`). 
-
 ```
 FIUBAMIENTO/
 ├── backend/
@@ -55,25 +53,35 @@ FIUBAMIENTO/
 │   │   │   ├── reportes.js
 │   │   │   ├── restricciones.js
 │   │   │   └── spots.js
-│   │   ├── node_modules/
-│   │   ├── .gitignore
 │   │   ├── app.js
-│   │   ├── package-lock.json
 │   │   ├── package.json
+│   │   └── package-lock.json
 │   ├── data/
-│   │   │   ├── 01_schemas.sql
-│   │   │   ├── 02_seeds.sql
+│   │   ├── 01_schemas.sql
+│   │   └── 02_seeds.sql
 │   ├── .dockerignore
 │   ├── docker-compose.yml
 │   └── Dockerfile
 ├── frontend/
+│   ├── css/
+│   │   ├── reportes.css
+│   │   └── styles.css
+│   ├── js/
+│   │   ├── mapa.js
+│   │   ├── reportes.js
+│   │   ├── restricciones.js
+│   │   └── spots.js
+│   ├── index.html
+│   ├── reportes.html
+│   ├── restricciones.html
+│   └── spots.html
 ├── .gitignore
 └── README.md
 ```
 
 ---
 
-## 🚀 Cómo levantar el backend
+## 🚀 Cómo levantar el proyecto
 
 ### Requisitos previos
 
@@ -92,28 +100,40 @@ cd FIUBAMIENTO
 2. Entrar a la carpeta del backend y levantar los servicios:
 
 ```bash
-cd "backend"
+cd backend
 docker compose up --build
 ```
 
-Esto levanta dos servicios:
+Esto levanta tres servicios:
 
 | Servicio | Puerto local |
 |---|---|
+| Frontend | http://localhost:8080 |
 | Backend (API) | http://localhost:3000 |
-| PostgreSQL | localhost:5433 |
+| PostgreSQL | localhost:5432 |
 
 La base de datos se inicializa automáticamente con el schema y los datos de prueba al primer arranque (carpeta `data/`).
 
 ---
 
-## 🔌 Endpoints planeados de la API
+## 🌐 Páginas del frontend
+
+| Página | Descripción |
+|---|---|
+| `index.html` | Mapa principal con los spots y sus estados |
+| `spots.html` | Listado y gestión de spots |
+| `reportes.html` | Historial de reportes por spot |
+| `restricciones.html` | Gestión de restricciones horarias por spot |
+
+---
+
+## 🔌 Endpoints de la API
 
 ### Spots
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| `GET` | `/api/v1/spots` | Lista todos los spots con su estado actual calculado |
+| `GET` | `/api/v1/spots` | Lista todos los spots con su estado calculado |
 | `GET` | `/api/v1/spots/:id` | Detalle de un spot |
 | `POST` | `/api/v1/spots` | Crear un nuevo spot |
 | `PUT` | `/api/v1/spots/:id` | Actualizar un spot |
@@ -123,33 +143,35 @@ La base de datos se inicializa automáticamente con el schema y los datos de pru
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| `GET` | `/api/v1/spots/:id/reportes` | Historial de reportes de un spot |
-| `POST` | `/api/v1/spots/:id/reportes` | Crear un nuevo reporte |
-| `POST` | `/api/v1/reportes/:id/votar` | Confirmar o desmentir un reporte |
+| `GET` | `/api/v1/reportes?spot_id=X` | Historial de reportes de un spot |
+| `GET` | `/api/v1/reportes/:id` | Detalle de un reporte |
+| `POST` | `/api/v1/reportes` | Crear un nuevo reporte |
+| `PUT` | `/api/v1/reportes/:id` | Actualizar un reporte |
+| `DELETE` | `/api/v1/reportes/:id` | Eliminar un reporte |
 
 ### Restricciones
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| `GET` | `/api/v1/spots/:id/restricciones` | Restricciones de un spot |
-| `POST` | `/api/v1/spots/:id/restricciones` | Agregar una restricción |
+| `GET` | `/api/v1/restricciones?spot_id=X` | Restricciones de un spot |
+| `GET` | `/api/v1/restricciones/:id` | Detalle de una restricción |
+| `POST` | `/api/v1/restricciones` | Agregar una restricción |
 | `PUT` | `/api/v1/restricciones/:id` | Actualizar una restricción |
 | `DELETE` | `/api/v1/restricciones/:id` | Eliminar una restricción |
 
 ### Lógica de estado en `GET /api/v1/spots`
 
-Cada spot devuelve un campo `estado_actual` calculado en el backend según estas reglas, en orden de prioridad:
+Cada spot devuelve un campo `estado` calculado en el backend según estas reglas, en orden de prioridad:
 
 1. `restringido` — hay una restricción horaria activa en este momento.
-2. `sin_info_reciente` — el último reporte existe pero ya expiró.
-3. `sin_reportes` — nunca se reportó nada para ese lugar.
-4. `libre` / `ocupado` — el reporte más reciente es válido.
+2. `sin_informacion_reciente` — el último reporte expiró (más de 3 horas sin actividad).
+3. `libre` / `ocupado` — el reporte más reciente es válido.
 
 ---
 
 ## 🖼️ Capturas de pantalla
 
-> *(hay que gregar capturas del mapa, el panel de spot y el panel de administración una vez que el frontend esté implementado)*
+*(Agregar capturas del mapa y las páginas de gestión)*
 
 ---
 
@@ -165,4 +187,5 @@ Cada spot devuelve un campo `estado_actual` calculado en el backend según estas
 
 ## 📝 Uso de Inteligencia Artificial
 
-En el desarrollo de este proyecto se utilizaron asistentes de IA como herramienta de apoyo. Todo el código presente en el repositorio fue revisado, comprendido y validado por los integrantes del grupo.
+En el desarrollo de este proyecto se utilizaron asistentes de IA como herramienta de apoyo.
+Todo el código presente en el repositorio fue revisado, comprendido y validado por los integrantes del grupo.

@@ -1,57 +1,118 @@
-// Se ejecuta apenas carga la página
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Leemos los parámetros de la URL (ej: ?spot_id=5)
-    const parametros = new URLSearchParams(window.location.search);
-    const spot_id_url = parametros.get('spot_id');
+const URL_API = 'http://localhost:3000/api/v1/restricciones';
 
-    // 2. Si viene un ID en la URL, lo buscamos automáticamente
-    if (spot_id_url) {
-        // Opcional: Rellenamos el input para que el usuario vea qué ID se buscó
-        const input = document.getElementById('spot-id-input');
-        if (input) input.value = spot_id_url;
-        
-        // Ejecutamos la búsqueda
-        ejecutarBusqueda(spot_id_url);
-    }
-});
-
-// Función para el botón manual del buscador
 async function buscarRestricciones() {
-    const spot_id_input = document.getElementById('spot-id-input').value;
-    if (!spot_id_input) {
+    const spot_id = document.getElementById('spot-id-input').value;
+    if (!spot_id) {
         alert('Ingresá un Spot ID');
         return;
     }
-    ejecutarBusqueda(spot_id_input);
+    const response = await fetch(`${URL_API}?spot_id=${spot_id}`);
+    const restricciones = await response.json();
+    renderizarTabla(restricciones);
 }
 
-// Lógica central que hace el Fetch y dibuja la tabla
-async function ejecutarBusqueda(spot_id) {
-    try {
-        const response = await fetch(`http://localhost:3000/api/v1/restricciones?spot_id=${spot_id}`);
-        const restricciones = await response.json();
+function renderizarTabla(restricciones) {
+    const tbody = document.getElementById('body-restricciones');
+    tbody.innerHTML = '';
 
-        const tbody = document.getElementById('body-restricciones');
-        tbody.innerHTML = '';
-
-        if (!restricciones || restricciones.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6">No hay restricciones para este spot</td></tr>';
-            return;
-        }
-
-        for (const r of restricciones) {
-            const fila = `<tr>
-                <td>${r.spot_id}</td>
-                <td>${r.tipo_restriccion || '-'}</td>
-                <td>${r.dia_semana || '-'}</td>
-                <td>${r.hora_inicio || '-'}</td>
-                <td>${r.hora_fin || '-'}</td>
-                <td>${r.descripcion ?? '-'}</td>
-            </tr>`;
-            tbody.innerHTML += fila;
-        }
-    } catch (error) {
-        console.error("Error al buscar las restricciones:", error);
-        document.getElementById('body-restricciones').innerHTML = '<tr><td colspan="6">Error al cargar datos</td></tr>';
+    if (restricciones.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7">No hay restricciones para este spot</td></tr>';
+        return;
     }
+
+    restricciones.forEach(r => {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td>${r.spot_id}</td>
+            <td>${r.tipo_restriccion ?? r.tipo ?? '-'}</td>
+            <td>${r.dia_semana}</td>
+            <td>${r.hora_inicio}</td>
+            <td>${r.hora_fin}</td>
+            <td>${r.descripcion ?? '-'}</td>
+            <td>
+                <button class="button is-small is-warning" onclick="editarRestriccion(${r.id}, ${r.spot_id}, '${r.tipo_restriccion ?? r.tipo}', ${r.dia_semana}, '${r.hora_inicio}', '${r.hora_fin}', '${r.descripcion ?? ''}')">Editar</button>
+                <button class="button is-small is-danger" onclick="confirmarEliminar(${r.id})">Eliminar</button>
+            </td>
+        `;
+        tbody.appendChild(fila);
+    });
+}
+
+function editarRestriccion(id, spot_id, tipo, dia, hora_inicio, hora_fin, descripcion) {
+    document.getElementById('restriccion-id').value = id;
+    document.getElementById('form-spot-id').value = spot_id;
+    document.getElementById('form-tipo').value = tipo;
+    document.getElementById('form-dia').value = dia;
+    document.getElementById('form-hora-inicio').value = hora_inicio.slice(0, 5);
+    document.getElementById('form-hora-fin').value = hora_fin.slice(0, 5);
+    document.getElementById('form-descripcion').value = descripcion;
+    document.getElementById('form-titulo').textContent = 'Editar restricción';
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
+async function guardarRestriccion() {
+    const id = document.getElementById('restriccion-id').value;
+    const spot_id = document.getElementById('form-spot-id').value;
+    const tipo = document.getElementById('form-tipo').value;
+    const dia_semana = document.getElementById('form-dia').value;
+    const hora_inicio = document.getElementById('form-hora-inicio').value;
+    const hora_fin = document.getElementById('form-hora-fin').value;
+    const descripcion = document.getElementById('form-descripcion').value;
+
+    if (!spot_id || !tipo || !dia_semana || !hora_inicio || !hora_fin) {
+        alert('Completá todos los campos obligatorios');
+        return;
+    }
+
+    const body = { spot_id: Number(spot_id), tipo, dia_semana: Number(dia_semana), hora_inicio, hora_fin, descripcion };
+
+    if (id) {
+        await fetch(`${URL_API}/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+    } else {
+        await fetch(URL_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+    }
+
+    limpiarFormulario();
+    buscarRestricciones();
+}
+
+let restriccionAEliminarId = null;
+
+function confirmarEliminar(id) {
+    restriccionAEliminarId = id;
+    document.getElementById('modal-confirmar').classList.add('is-active');
+}
+
+async function eliminarRestriccion() {
+    if (!restriccionAEliminarId) return;
+    await fetch(`${URL_API}/${restriccionAEliminarId}`, { method: 'DELETE' });
+    cerrarModalConfirmar();
+    buscarRestricciones();
+}
+
+function cerrarModalConfirmar() {
+    restriccionAEliminarId = null;
+    document.getElementById('modal-confirmar').classList.remove('is-active');
+}
+
+document.getElementById('btn-confirmar-eliminar').addEventListener('click', eliminarRestriccion);
+document.getElementById('btn-cancelar-eliminar').addEventListener('click', cerrarModalConfirmar);
+
+function limpiarFormulario() {
+    document.getElementById('restriccion-id').value = '';
+    document.getElementById('form-spot-id').value = '';
+    document.getElementById('form-tipo').value = '';
+    document.getElementById('form-dia').value = '';
+    document.getElementById('form-hora-inicio').value = '';
+    document.getElementById('form-hora-fin').value = '';
+    document.getElementById('form-descripcion').value = '';
+    document.getElementById('form-titulo').textContent = 'Agregar restricción';
 }

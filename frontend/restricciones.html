@@ -4,25 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restricciones</title>
-    <!-- Bulma CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
 </head>
 <body>
     <section class="section">
         <div class="container">
+            <a href="index.html" class="button mb-4">← Volver al mapa</a>
             <h1 class="title">Restricciones de estacionamiento</h1>
 
-            <!-- Campo de búsqueda -->
-            <div class="field has-addons">
+            <!-- Búsqueda -->
+            <div class="field has-addons mb-4">
                 <div class="control is-expanded">
-                    <input class="input" type="number" id="spot-id-input" placeholder="Ej: 1">
+                    <input class="input" type="number" id="spot-id-input" placeholder="Spot ID (ej: 1)">
                 </div>
                 <div class="control">
                     <button class="button is-primary" onclick="buscarRestricciones()">Buscar</button>
                 </div>
             </div>
 
-            <!-- Tabla de datos -->
+            <!-- Tabla -->
             <table class="table is-fullwidth is-striped mt-4">
                 <thead>
                     <tr>
@@ -32,15 +32,69 @@
                         <th>Hora inicio</th>
                         <th>Hora fin</th>
                         <th>Descripción</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="body-restricciones">
-                </tbody>
+                <tbody id="body-restricciones"></tbody>
             </table>
+
+            <!-- Formulario crear/editar -->
+            <div class="box mt-5">
+                <h2 class="subtitle" id="form-titulo">Agregar restricción</h2>
+                <input type="hidden" id="restriccion-id">
+                <div class="field">
+                    <label class="label">Spot ID</label>
+                    <input class="input" type="number" id="form-spot-id" placeholder="Ej: 1">
+                </div>
+                <div class="field">
+                    <label class="label">Tipo</label>
+                    <input class="input" type="text" id="form-tipo" placeholder="Ej: carga_descarga">
+                </div>
+                <div class="field">
+                    <label class="label">Día de la semana (1=Lunes, 7=Domingo)</label>
+                    <input class="input" type="number" id="form-dia" min="1" max="7" placeholder="Ej: 1">
+                </div>
+                <div class="field">
+                    <label class="label">Hora inicio</label>
+                    <input class="input" type="time" id="form-hora-inicio">
+                </div>
+                <div class="field">
+                    <label class="label">Hora fin</label>
+                    <input class="input" type="time" id="form-hora-fin">
+                </div>
+                <div class="field">
+                    <label class="label">Descripción (opcional)</label>
+                    <input class="input" type="text" id="form-descripcion" placeholder="Ej: Prohibido estacionar días hábiles">
+                </div>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-success" onclick="guardarRestriccion()">Guardar</button>
+                    </div>
+                    <div class="control">
+                        <button class="button is-light" onclick="limpiarFormulario()">Cancelar</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Asegúrate de enlazar tu archivo JS aquí -->
+    <!-- Modal de confirmación -->
+    <div id="modal-confirmar" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Confirmar eliminación</p>
+            </header>
+            <section class="modal-card-body">
+                ¿Seguro que querés eliminar esta restricción?
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-danger" id="btn-confirmar-eliminar">Eliminar</button>
+                <button class="button" id="btn-cancelar-eliminar">Cancelar</button>
+            </footer>
+        </div>
+    </div>
+
     <script src="js/restricciones.js"></script>
 </body>
 </html>
