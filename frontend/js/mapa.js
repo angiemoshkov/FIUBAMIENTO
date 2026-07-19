@@ -140,15 +140,16 @@ async function gestionarReporte(spot, nuevoEstado) {
             });
 
             if (!response.ok) throw new Error('Error al crear el reporte nuevo');
+            alert(`¡Reporte creado como ${nuevoEstado}!`);
         } 
         // CONDICIÓN 2: Ocupado o Libre -> PUT (Modificar existente)
         else if (spot.estado === 'ocupado' || spot.estado === 'libre') {
-            if (!spot.id) {
+            if (!spot.ultimo_reporte_id) {
                 alert("No se pudo actualizar el estado por falta de ID de reporte.");
                 return;
             }
 
-            const response = await fetch(`${urlBase}/${spot.id}`, {
+            const response = await fetch(`${urlBase}/${spot.ultimo_reporte_id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
