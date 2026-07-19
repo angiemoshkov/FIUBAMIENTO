@@ -6,8 +6,8 @@ async function cargarReportes() {
     renderizarTabla(reportes);
 }
 
-function formatearFecha(iso) {
-    return new Date(iso).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+function formatearFecha(fecha) {
+    return new Date(fecha).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
 }
 
 function renderizarTabla(reportes) {

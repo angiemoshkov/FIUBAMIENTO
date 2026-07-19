@@ -17,15 +17,15 @@ body {
 }
 
 .estado-ocupado {
-    color: #e74c3c;
+    color: #e74c3c; 
 }
 
-.contador-libre {
-    color: #1e8449;
+td.contador-libre {
+    color: #146837;
     font-weight: bold;
 }
 
-.contador-ocupado {
-    color: #922b21;
+td.contador-ocupado {
+    color: #9f3127;
     font-weight: bold;
 }
