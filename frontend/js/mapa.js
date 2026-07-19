@@ -1,5 +1,5 @@
 
-const map = L.map('map').setView([-34.6177, -58.3683], 16);
+const map = L.map('map').setView([-34.6177, -58.3683], 17);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -143,14 +143,12 @@ async function gestionarReporte(spot, nuevoEstado) {
         } 
         // CONDICIÓN 2: Ocupado o Libre -> PUT (Modificar existente)
         else if (spot.estado === 'ocupado' || spot.estado === 'libre') {
-            // Es vital que el backend te mande el ID del reporte actual en el objeto spot
-            if (!spot.ultimo_reporte_id) {
-                console.error("Error: No se puede hacer PUT porque falta el 'ultimo_reporte_id' en el spot.");
+            if (!spot.id) {
                 alert("No se pudo actualizar el estado por falta de ID de reporte.");
                 return;
             }
 
-            const response = await fetch(`${urlBase}/${spot.ultimo_reporte_id}`, {
+            const response = await fetch(`${urlBase}/${spot.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -200,7 +198,6 @@ async function cargarSpots() {
             const estadoKey = spot.estado || 'sin_informacion_reciente';
             const infoEstado = configuracionEstados[estadoKey] || configuracionEstados['sin_informacion_reciente'];
 
-            const urlReportesPagina = `reportes.html?spot_id=${spot.id}`;
             const urlRestricciones = `restricciones.html?spot_id=${spot.id}`;
             const urlGoogleMaps = `https://www.google.com/maps/dir/?api=1&destination=${spot.latitud},${spot.longitud}`;
 
@@ -210,7 +207,6 @@ async function cargarSpots() {
             popupContent.querySelector('.popup-estado strong').textContent = infoEstado.texto;
             popupContent.querySelector('.btn-maps').href = urlGoogleMaps;
             
-            popupContent.querySelector('.btn-ver-reportes').href = urlReportesPagina;
             popupContent.querySelector('.btn-restricciones').href = urlRestricciones;
 
             const btnOcupado = popupContent.querySelector('.btn-marcar-ocupado');
