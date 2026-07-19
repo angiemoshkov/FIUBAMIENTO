@@ -1,8 +1,7 @@
 
-let reporteAEditarId = null; 
-const URL_API_REPORTES = 'http://localhost:3000/api/v1/reportes';
-
 document.addEventListener('DOMContentLoaded', () => {
+
+    let reporteAEditarId = null; 
     const parametrosUrl = new URLSearchParams(window.location.search);
     const spotId = parametrosUrl.get('spot_id');
     const spotInfoElement = document.getElementById('spot-info');
@@ -19,14 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarReportes(spotId);
 
     configurarModal(spotId);
-});
 
 async function cargarReportes(spotId) {
     const container = document.getElementById('reportes-container');
     container.innerHTML = '<div class="loader">Cargando datos...</div>';
 
     try {
-        const response = await fetch(`${URL_API_REPORTES}?spot_id=${spotId}`);
+        const response = await fetch(`http://localhost:3000/api/v1/reportes?spot_id=${spotId}`);
         if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
         
         const reportes = await response.json();
@@ -55,8 +53,8 @@ function renderizarReportes(reportes, container, spotId) {
     }
 
     reportes.forEach(reporte => {
-        const divCard = document.createElement('div');
-        divCard.className = `reporte-card ${reporte.estado_reportado}`;
+        const div = document.createElement('div');
+        div.className = `reporte-card ${reporte.estado_reportado}`;
 
         let textoFecha = "Fecha desconocida";
         if (reporte.fecha_creacion) { 
@@ -64,7 +62,7 @@ function renderizarReportes(reportes, container, spotId) {
             textoFecha = fechaObj.toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
         }
 
-        divCard.innerHTML = `
+        div.innerHTML = `
             <div>
                 <div class="reporte-estado">${reporte.estado_reportado}</div>
                 <div class="reporte-fecha">Reportado el: ${textoFecha}</div>
@@ -77,20 +75,14 @@ function renderizarReportes(reportes, container, spotId) {
         `;
 
         // Lógica del botón Eliminar
-        const btnEliminar = divCard.querySelector('.btn-eliminar');
+        const btnEliminar = div.querySelector('.btn-eliminar');
         btnEliminar.addEventListener('click', () => {
             if (confirm('¿Estás seguro de que deseas eliminar este reporte?')) {
                 eliminarReporte(reporte.id, spotId);
             }
         });
 
-        // Lógica del botón Editar
-        const btnEditar = divCard.querySelector('.btn-editar');
-        btnEditar.addEventListener('click', () => {
-            abrirModal(reporte.id);
-        });
-
-        container.appendChild(divCard);
+        container.appendChild(div);
     });
 }
 
@@ -113,36 +105,10 @@ async function eliminarReporte(reporteId, spotId) {
     }
 }
 
-async function actualizarReporte(nuevoEstado, spotId) {
-    if (!reporteAEditarId) return;
-
-    try {
-        const response = await fetch(`${URL_API_REPORTES}/${reporteAEditarId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ estado_reportado: nuevoEstado })
-        });
-
-        if (response.ok) {
-            cerrarModal();
-           
-            cargarReportes(spotId);
-        } else {
-            alert('Error al actualizar el reporte');
-        }
-    } catch (error) {
-        console.error("Error en PUT:", error);
-    }
-}
 
 
 function configurarModal(spotId) {
-    const btnLibre = document.getElementById('btn-modal-libre');
-    const btnOcupado = document.getElementById('btn-modal-ocupado');
     const btnCerrar = document.getElementById('btn-cerrar-modal');
-
-    btnLibre.addEventListener('click', () => actualizarReporte('libre', spotId));
-    btnOcupado.addEventListener('click', () => actualizarReporte('ocupado', spotId));
     btnCerrar.addEventListener('click', cerrarModal);
 }
 
@@ -156,59 +122,4 @@ function cerrarModal() {
     document.getElementById('modal-editar').classList.add('oculto');
 }
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    const parametrosUrl = new URLSearchParams(window.location.search);
-    const spotId = parametrosUrl.get('spot_id');
-    
-
-    if (spotId) {
-        configurarModalCrear(spotId);
-    }
 });
-
-
-function configurarModalCrear(spotId) {
-    const modalCrear = document.getElementById('modal-crear');
-    const btnAbrirCrear = document.getElementById('btn-abrir-crear');
-    const btnCerrarCrear = document.getElementById('btn-cerrar-crear');
-    const btnCrearLibre = document.getElementById('btn-crear-libre');
-    const btnCrearOcupado = document.getElementById('btn-crear-ocupado');
-
-    btnAbrirCrear.addEventListener('click', () => {
-        modalCrear.classList.remove('oculto');
-    });
-
-    btnCerrarCrear.addEventListener('click', () => {
-        modalCrear.classList.add('oculto');
-    });
-
-    btnCrearLibre.addEventListener('click', () => guardarNuevoReporte('libre', spotId));
-    btnCrearOcupado.addEventListener('click', () => guardarNuevoReporte('ocupado', spotId));
-}
-
-async function guardarNuevoReporte(estado, spotId) {
-    try {
-        const response = await fetch('http://localhost:3000/api/v1/reportes', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                spot_id: parseInt(spotId),
-                estado_reportado: estado
-            })
-        });
-
-        if (response.ok) {
-            document.getElementById('modal-crear').classList.add('oculto');
-            cargarReportes(spotId);
-        } else {
-            const errorData = await response.json();
-            alert(`Error al crear el reporte: ${errorData.error || 'Error desconocido'}`);
-        }
-    } catch (error) {
-        console.error("Error en POST /reportes:", error);
-        alert("No se pudo conectar con el servidor para guardar el reporte.");
-    }
-}

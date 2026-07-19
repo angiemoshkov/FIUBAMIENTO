@@ -11,42 +11,13 @@
         <header>
             <a href="index.html" class="btn-volver">← Volver al mapa</a>
             <h1>Historial de Reportes</h1>
-            <p id="spot-info">Cargando reportes del Spot...</p>
-            <div class="acciones-cabecera">
-                <button id="btn-abrir-crear" class="btn-agregar">+ Agregar Reporte</button>
-            </div>
+            <p id="spot-info">Viendo reportes para el Spot ID...</p>
         </header>
 
         <main id="reportes-container">
             <div class="loader">Cargando datos...</div>
         </main>
     </div>
-
-    
-    <div id="modal-editar" class="modal oculto">
-        <div class="modal-contenido">
-            <h3>Editar Reporte</h3>
-            <p>Selecciona el nuevo estado para este reporte:</p>
-            <div class="modal-botones">
-                <button id="btn-modal-libre" class="btn-estado libre">Libre</button>
-                <button id="btn-modal-ocupado" class="btn-estado ocupado">Ocupado</button>
-            </div>
-            <button id="btn-cerrar-modal" class="btn-cancelar">Cancelar</button>
-        </div>
-    </div>
-
-    <div id="modal-crear" class="modal oculto">
-        <div class="modal-contenido">
-            <h3>Nuevo Reporte</h3>
-            <p>¿Cómo se encuentra el spot en este momento?</p>
-            <div class="modal-botones">
-                <button id="btn-crear-libre" class="btn-estado libre">Libre</button>
-                <button id="btn-crear-ocupado" class="btn-estado ocupado">Ocupado</button>
-            </div>
-            <button id="btn-cerrar-crear" class="btn-cancelar">Cancelar</button>
-        </div>
-    </div>
-
     <script src="js/reportes.js"></script>
 </body>
 </html>
