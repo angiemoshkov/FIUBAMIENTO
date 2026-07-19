@@ -22,22 +22,32 @@ export async function getReporteById(id) {
 }
 
 export async function createReporte(spot_id, estado_reportado) {
+  const vecesLibre   = estado_reportado === 'libre'   ? 1 : 0;
+  const vecesOcupado = estado_reportado === 'ocupado' ? 1 : 0;
+
   const res = await db.query(
-    `INSERT INTO reportes (spot_id, estado_reportado, fecha_expiracion)
-     VALUES ($1, $2, NOW() + INTERVAL '3 hours')
+    `INSERT INTO reportes (spot_id, estado_reportado, fecha_expiracion, veces_libre, veces_ocupado)
+     VALUES ($1, $2, NOW() + INTERVAL '3 hours', $3, $4)
      RETURNING *`,
-    [spot_id, estado_reportado]
+    [spot_id, estado_reportado, vecesLibre, vecesOcupado]
   );
   return res.rows[0];
 }
 
 export async function updateReporte(id, estado_reportado) {
+  const incLibre   = estado_reportado === 'libre'   ? 1 : 0;
+  const incOcupado = estado_reportado === 'ocupado' ? 1 : 0;
+
   const res = await db.query(
     `UPDATE reportes
-     SET estado_reportado = $1, fecha_creacion = NOW(), fecha_expiracion = NOW() + INTERVAL '3 hours'
-     WHERE id = $2
+     SET estado_reportado = $2,
+         fecha_creacion   = NOW(),
+         fecha_expiracion = NOW() + INTERVAL '3 hours',
+         veces_libre   = veces_libre   + $3,
+         veces_ocupado = veces_ocupado + $4
+     WHERE id = $1
      RETURNING *`,
-    [estado_reportado, id]
+    [id, estado_reportado, incLibre, incOcupado]
   );
   return res.rows[0];
 }
