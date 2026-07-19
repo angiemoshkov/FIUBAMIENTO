@@ -1,5 +1,6 @@
 
 const map = L.map('map').setView([-34.6177, -58.3683], 17);
+const spotsLayer = L.layerGroup().addTo(map);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -192,6 +193,8 @@ async function cargarSpots() {
             'sin_informacion_reciente': { color: '#95a5a6', texto: 'Sin información reciente' }
         };
 
+        spotsLayer.clearLayers();
+
         spotsDesdeBaseDeDatos.forEach(spot => {
 
             console.log(`Dibujando spot ID: ${spot.id} en lat: ${spot.latitud} (${typeof spot.latitud}), lng: ${spot.longitud}`);
@@ -232,7 +235,7 @@ async function cargarSpots() {
                 color: "#ffffff",
                 weight: 2,
                 fillOpacity: 0.9
-            }).addTo(map).bindPopup(popupDiv);
+            }).addTo(spotsLayer).bindPopup(popupDiv);
         });
     } catch (error) {
         console.error("Error al cargar o procesar los spots:", error);
