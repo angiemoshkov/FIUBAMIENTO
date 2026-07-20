@@ -11,9 +11,9 @@
 
             <div id="titulo">
                 <span class="texto-titulo">FIUBAMIENTO</span>
-                <button id="btn-activar-creacion"> + </button>
             </div>
 
+            <button id="btn-activar-creacion">Agregar nuevo Spot</button>
             <a id="btn-historial" href="reportes.html">Historial de Reportes</a>
 
             <template id="nuevo-spot-template">
@@ -33,6 +33,32 @@
                     <div class="container-acciones">
                         <!-- Cambiado de <a> a <button> para garantizar compatibilidad con JS y Leaflet -->
                         <button type="button" id="btn-guardar-spot" class="btn-guardar">Guardar Punto</button>
+                    </div>
+                </div>
+            </template>
+
+            <template id="editar-spot-template">
+                <div class="spot-popup formulario-creacion">
+                    <h4 class="titulo-creacion">Editar Punto</h4>
+
+                    <p class="aviso-movido">Moviste el punto. Al guardar se borran sus reportes y restricciones, y vuelve a "sin información reciente".</p>
+
+                    <div class="grupo-input">
+                        <label class="label-creacion">Dirección aproximada:</label>
+                        <input type="text" placeholder="Ej. Av. Paseo Colón 850" class="input-creacion edit-direccion" required>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label class="label-creacion">Referencia / Descripción:</label>
+                        <input type="text" placeholder="Ej. Cerca de la entrada principal" class="input-creacion edit-referencia" required>
+                    </div>
+
+                    <div class="container-acciones">
+                        <button type="button" class="btn-mover">Mover en el mapa</button>
+                    </div>
+
+                    <div class="container-acciones">
+                        <button type="button" class="btn-guardar btn-guardar-edicion">Guardar cambios</button>
                     </div>
                 </div>
             </template>
@@ -64,6 +90,23 @@
             </template>
 
         </main>
+
+        <div id="modal-confirmar" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Confirmar eliminación</p>
+                </header>
+                <section class="modal-card-body">
+                    ¿Seguro que querés eliminar este spot? También se van a borrar sus reportes y restricciones.
+                </section>
+                <footer class="modal-card-foot">
+                    <button class="button is-danger" id="btn-confirmar-eliminar">Eliminar</button>
+                    <button class="button" id="btn-cancelar-eliminar">Cancelar</button>
+                </footer>
+            </div>
+        </div>
+
         <footer>
         </footer>
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
