@@ -62,10 +62,10 @@ endpointsSpots.get("/", async (req, res) => {
   for (const spot of spots) {
     if (spot.restricciones_activas > 0)
         spot.estado = 'restringido';
-    else if (spot.estado_reportado === null)
+    else if (spot.ultimo_estado === null)
         spot.estado = 'sin_informacion_reciente';
     else 
-        spot.estado = spot.estado_reportado;
+        spot.estado = spot.ultimo_estado;
   }
 
   res.json(spots);

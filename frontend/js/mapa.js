@@ -1,5 +1,6 @@
 
-const map = L.map('map').setView([-34.6177, -58.3683], 16);
+const map = L.map('map').setView([-34.6177, -58.3683], 17);
+const spotsLayer = L.layerGroup().addTo(map);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -140,12 +141,11 @@ async function gestionarReporte(spot, nuevoEstado) {
             });
 
             if (!response.ok) throw new Error('Error al crear el reporte nuevo');
+            alert(`¡Reporte creado como ${nuevoEstado}!`);
         } 
         // CONDICIÓN 2: Ocupado o Libre -> PUT (Modificar existente)
         else if (spot.estado === 'ocupado' || spot.estado === 'libre') {
-            // Es vital que el backend te mande el ID del reporte actual en el objeto spot
             if (!spot.ultimo_reporte_id) {
-                console.error("Error: No se puede hacer PUT porque falta el 'ultimo_reporte_id' en el spot.");
                 alert("No se pudo actualizar el estado por falta de ID de reporte.");
                 return;
             }
@@ -193,6 +193,8 @@ async function cargarSpots() {
             'sin_informacion_reciente': { color: '#95a5a6', texto: 'Sin información reciente' }
         };
 
+        spotsLayer.clearLayers();
+
         spotsDesdeBaseDeDatos.forEach(spot => {
 
             console.log(`Dibujando spot ID: ${spot.id} en lat: ${spot.latitud} (${typeof spot.latitud}), lng: ${spot.longitud}`);
@@ -200,7 +202,6 @@ async function cargarSpots() {
             const estadoKey = spot.estado || 'sin_informacion_reciente';
             const infoEstado = configuracionEstados[estadoKey] || configuracionEstados['sin_informacion_reciente'];
 
-            const urlReportesPagina = `reportes.html?spot_id=${spot.id}`;
             const urlRestricciones = `restricciones.html?spot_id=${spot.id}`;
             const urlGoogleMaps = `https://www.google.com/maps/dir/?api=1&destination=${spot.latitud},${spot.longitud}`;
 
@@ -210,7 +211,6 @@ async function cargarSpots() {
             popupContent.querySelector('.popup-estado strong').textContent = infoEstado.texto;
             popupContent.querySelector('.btn-maps').href = urlGoogleMaps;
             
-            popupContent.querySelector('.btn-ver-reportes').href = urlReportesPagina;
             popupContent.querySelector('.btn-restricciones').href = urlRestricciones;
 
             const btnOcupado = popupContent.querySelector('.btn-marcar-ocupado');
@@ -235,7 +235,7 @@ async function cargarSpots() {
                 color: "#ffffff",
                 weight: 2,
                 fillOpacity: 0.9
-            }).addTo(map).bindPopup(popupDiv);
+            }).addTo(spotsLayer).bindPopup(popupDiv);
         });
     } catch (error) {
         console.error("Error al cargar o procesar los spots:", error);

@@ -11,6 +11,17 @@ export async function getReportesBySpot(spot_id) {
   return res.rows;
 }
 
+export async function getAllReportes() {
+  const res = await db.query(
+    `SELECT r.id, r.spot_id, s.direccion_aproximada, r.estado_reportado,
+            r.fecha_creacion, r.fecha_expiracion, r.veces_libre, r.veces_ocupado
+     FROM reportes r
+     JOIN spots s ON s.id = r.spot_id
+     ORDER BY r.fecha_creacion DESC`
+  );
+  return res.rows;
+}
+
 export async function getReporteById(id) {
   const res = await db.query(
     `SELECT id, spot_id, estado_reportado, fecha_creacion, fecha_expiracion, veces_libre, veces_ocupado

@@ -26,7 +26,14 @@ export async function getAllSpots(dia_semana, hora) {
     WHERE rep.spot_id = s.id
     AND rep.fecha_expiracion > NOW()
     ORDER BY rep.fecha_creacion DESC 
-    LIMIT 1) AS estado_reportado
+    LIMIT 1) AS ultimo_estado,
+
+  (SELECT rep.id FROM reportes rep
+    WHERE rep.spot_id = s.id
+    AND rep.fecha_expiracion > NOW()
+    ORDER BY rep.fecha_creacion DESC LIMIT 1)
+    AS ultimo_reporte_id
+
   FROM spots s
   `, [dia_semana, hora],
   );

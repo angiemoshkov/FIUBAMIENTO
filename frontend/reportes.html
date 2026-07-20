@@ -3,47 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reportes del Spot</title>
+    <title>Historial de Reportes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="css/reportes.css">
 </head>
 <body>
-    <div class="contenedor-principal">
-        <header>
-            <a href="index.html" class="btn-volver">← Volver al mapa</a>
-            <h1>Historial de Reportes</h1>
-            <p id="spot-info">Cargando reportes del Spot...</p>
-            <div class="acciones-cabecera">
-                <button id="btn-abrir-crear" class="btn-agregar">+ Agregar Reporte</button>
-            </div>
-        </header>
+    <section class="section pt-4">
+        <div class="container">
+            <a href="index.html" class="button mb-4">← Volver al mapa</a>
+            <h1 class="title">Historial de Reportes</h1>
+            <p class="subtitle">Foto en tiempo real de todos los reportes cargados</p>
 
-        <main id="reportes-container">
-            <div class="loader">Cargando datos...</div>
-        </main>
-    </div>
-
-    
-    <div id="modal-editar" class="modal oculto">
-        <div class="modal-contenido">
-            <h3>Editar Reporte</h3>
-            <p>Selecciona el nuevo estado para este reporte:</p>
-            <div class="modal-botones">
-                <button id="btn-modal-libre" class="btn-estado libre">Libre</button>
-                <button id="btn-modal-ocupado" class="btn-estado ocupado">Ocupado</button>
-            </div>
-            <button id="btn-cerrar-modal" class="btn-cancelar">Cancelar</button>
+            <table class="table is-fullwidth is-striped mt-6">
+                <thead>
+                    <tr>
+                        <th>Dirección</th>
+                        <th>Estado</th>
+                        <th>Veces libre</th>
+                        <th>Veces ocupado</th>
+                        <th>Creado</th>
+                        <th>Expira</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="body-reportes"></tbody>
+            </table>
         </div>
-    </div>
+    </section>
 
-    <div id="modal-crear" class="modal oculto">
-        <div class="modal-contenido">
-            <h3>Nuevo Reporte</h3>
-            <p>¿Cómo se encuentra el spot en este momento?</p>
-            <div class="modal-botones">
-                <button id="btn-crear-libre" class="btn-estado libre">Libre</button>
-                <button id="btn-crear-ocupado" class="btn-estado ocupado">Ocupado</button>
-            </div>
-            <button id="btn-cerrar-crear" class="btn-cancelar">Cancelar</button>
+    <div id="modal-confirmar" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Confirmar eliminación</p>
+            </header>
+            <section class="modal-card-body">
+                ¿Seguro que querés eliminar este reporte?
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-danger" id="btn-confirmar-eliminar">Eliminar</button>
+                <button class="button" id="btn-cancelar-eliminar">Cancelar</button>
+            </footer>
         </div>
     </div>
 
