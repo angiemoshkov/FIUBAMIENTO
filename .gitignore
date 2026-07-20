@@ -1,5 +1,7 @@
 # Entornos virtuales y dependencias
+# sin barra inicial: matchea node_modules/ a cualquier profundidad
 node_modules/
+
 __pycache__/
 .venv/
 
