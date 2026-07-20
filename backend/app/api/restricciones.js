@@ -10,7 +10,6 @@ import {
 export const endpointsRestricciones = Router();
 
 endpointsRestricciones.post("/", async (req, res) => {
-  try {
     const { spot_id, tipo, dia_semana, hora_inicio, hora_fin, descripcion } = req.body;
 
     if (!spot_id || isNaN(Number(spot_id))) {
@@ -50,15 +49,9 @@ endpointsRestricciones.post("/", async (req, res) => {
       hora_fin,
       descripcion,
     });
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Error interno del servidor al crear la restricción" });
-  }
 });
 
 endpointsRestricciones.get("/", async (req, res) => {
-  try {
     const { spot_id } = req.query;
 
     if (!spot_id) {
@@ -67,13 +60,9 @@ endpointsRestricciones.get("/", async (req, res) => {
 
     const restricciones = await getAllRestricciones(spot_id);
     return res.json(restricciones);
-  } catch (error) {
-    return res.status(500).json({ error: "Error interno del servidor al obtener registros" });
-  }
 });
 
 endpointsRestricciones.get("/:id", async (req, res) => {
-  try {
     const { id } = req.params;
     const restriccion = await getRestriccion(id);
 
@@ -82,13 +71,9 @@ endpointsRestricciones.get("/:id", async (req, res) => {
     }
 
     return res.json(restriccion);
-  } catch (error) {
-    return res.status(500).json({ error: "Error interno del servidor al obtener la restricción" });
-  }
 });
 
 endpointsRestricciones.put("/:id", async (req, res) => {
-  try {
     const { id } = req.params;
     const { tipo, dia_semana, hora_inicio, hora_fin, descripcion } = req.body;
 
@@ -98,6 +83,8 @@ endpointsRestricciones.put("/:id", async (req, res) => {
     if (dia_semana === undefined || isNaN(Number(dia_semana))) {
       return res.status(400).json({ error: "El campo 'dia_semana' debe ser un número" });
     }
+    if (!hora_fin || !hora_inicio)
+        return res.status(400).json({error: "Los campos 'hora_inicio' y 'hora_fin' son obligatorios"});
 
     const updated = await updateRestriccion(id, tipo, dia_semana, hora_inicio, hora_fin, descripcion);
 
@@ -106,13 +93,9 @@ endpointsRestricciones.put("/:id", async (req, res) => {
     }
 
     return res.json({ mensaje: "Restricción actualizada con éxito" });
-  } catch (error) {
-    return res.status(500).json({ error: "Error interno del servidor al actualizar" });
-  }
 });
 
 endpointsRestricciones.delete("/:id", async (req, res) => {
-  try {
     const { id } = req.params;
     const deleted = await deleteRestriccion(id);
 
@@ -121,7 +104,4 @@ endpointsRestricciones.delete("/:id", async (req, res) => {
     }
 
     return res.json({ mensaje: "Restricción eliminada con éxito" });
-  } catch (error) {
-    return res.status(500).json({ error: "Error interno del servidor al eliminar" });
-  }
 });
