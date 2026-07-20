@@ -15,6 +15,11 @@ app.use("/api/v1/spots", endpointsSpots);
 app.use("/api/v1/reportes", endpointsReportes);
 app.use("/api/v1/restricciones", endpointsRestricciones);
 
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({error: "Error interno del servidor"})
+})
+
 app.get("/health", (req, res) => res.send("OK"));
 
 app.listen(port, () => console.log(`Escuchando en puerto ${port}`));

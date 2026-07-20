@@ -7,6 +7,11 @@ async function buscarRestricciones() {
         return;
     }
     const response = await fetch(`${URL_API}?spot_id=${spot_id}`);
+    if (!response.ok) {
+        const data = await response.json();
+        alert(data.error);
+        return;
+    }
     const restricciones = await response.json();
     renderizarTabla(restricciones);
 }
@@ -66,22 +71,29 @@ async function guardarRestriccion() {
 
     const body = { spot_id: Number(spot_id), tipo, dia_semana: Number(dia_semana), hora_inicio, hora_fin, descripcion };
 
+    let response;
     if (id) {
-        await fetch(`${URL_API}/${id}`, {
+        response = await fetch(`${URL_API}/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
     } else {
-        await fetch(URL_API, {
+        response = await fetch(URL_API, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
     }
 
+    if (!response.ok) {
+        const data = await response.json();
+        alert(data.error);
+        return;
+    }
+
+    alert("¡Restriccion guardada exitosamente!");
     limpiarFormulario();
-    buscarRestricciones();
 }
 
 let restriccionAEliminarId = null;
@@ -93,7 +105,15 @@ function confirmarEliminar(id) {
 
 async function eliminarRestriccion() {
     if (!restriccionAEliminarId) return;
-    await fetch(`${URL_API}/${restriccionAEliminarId}`, { method: 'DELETE' });
+
+    const response = await fetch(`${URL_API}/${restriccionAEliminarId}`, { method: 'DELETE' });
+
+    if (!response.ok) {
+        const data = await response.json();
+        alert(data.error);
+        return;
+    }
+   
     cerrarModalConfirmar();
     buscarRestricciones();
 }
