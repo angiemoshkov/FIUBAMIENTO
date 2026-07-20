@@ -128,6 +128,12 @@ function desactivarModoCreacion() {
 async function gestionarReporte(spot, nuevoEstado) {
     const urlBase = 'http://localhost:3000/api/v1/reportes';
 
+    // CONDICIÓN 0: Restringido -> no se puede reportar
+    if (spot.estado === 'restringido') {
+        alert('⚠️ Este lugar tiene una restricción vigente en este horario. No es posible estacionar aquí ahora.');
+        return;
+    }
+
     try {
         // CONDICIÓN 1: Sin información reciente -> POST (Crear nuevo)
         if (spot.estado === 'sin_informacion_reciente') {
@@ -142,7 +148,7 @@ async function gestionarReporte(spot, nuevoEstado) {
 
             if (!response.ok) throw new Error('Error al crear el reporte nuevo');
             alert(`¡Reporte creado como ${nuevoEstado}!`);
-        } 
+        }
         // CONDICIÓN 2: Ocupado o Libre -> PUT (Modificar existente)
         else if (spot.estado === 'ocupado' || spot.estado === 'libre') {
             if (!spot.ultimo_reporte_id) {
