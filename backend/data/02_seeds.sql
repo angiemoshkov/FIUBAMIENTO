@@ -1,30 +1,15 @@
 INSERT INTO spots (latitud, longitud, direccion_aproximada, referencia, fecha_registro) VALUES
 (-34.6165645, -58.3695091, 'Calle San Lorenzo', 'Esquina con Av. Paseo Colón, vereda de FIUBA', NOW()),
-(-34.6165652, -58.3695429, 'Calle San Lorenzo', 'Sobre San Lorenzo, a metros de Paseo Colón', NOW()),
-(-34.6165662, -58.3695712, 'Calle San Lorenzo', 'Frente al acceso principal de FIUBA', NOW()),
-(-34.6165683, -58.3695994, 'Calle San Lorenzo', 'Frente a FIUBA, junto a la parada de colectivo', NOW()),
-(-34.6165683, -58.3696276, 'Calle San Lorenzo', 'Sobre San Lorenzo, a la altura del patio de FIUBA', NOW()),
-(-34.6165694, -58.3696507, 'Calle San Lorenzo', 'Mitad de cuadra entre Paseo Colón y Balcarce', NOW()),
-(-34.6165683, -58.3696751, 'Calle San Lorenzo', 'Sobre San Lorenzo, frente a comercio de la vereda impar', NOW()),
+(-34.6177728, -58.369828, 'Dr. Jose Maria Giuffra 221', 'Al lado de la Shell', NOW()),
 (-34.6165683, -58.3697058, 'Calle San Lorenzo', 'A media cuadra de Paseo Colón', NOW()),
-(-34.6165705, -58.3697353, 'Calle San Lorenzo', 'Sobre San Lorenzo, frente a edificio de departamentos', NOW()),
-(-34.6165726, -58.3697674, 'Calle San Lorenzo', 'Centro de cuadra, San Lorenzo entre Paseo Colón y Balcarce', NOW()),
-(-34.6165736, -58.3697918, 'Calle San Lorenzo', 'Sobre San Lorenzo, cerca de la boca de tormenta', NOW()),
-(-34.6165726, -58.3698200, 'Calle San Lorenzo', 'Sobre San Lorenzo, frente a portón de cochera', NOW()),
-(-34.6165726, -58.3698546, 'Calle San Lorenzo', 'Sobre San Lorenzo, tramo hacia Balcarce', NOW()),
-(-34.6165747, -58.3698854, 'Calle San Lorenzo', 'Sobre San Lorenzo, frente a kiosco', NOW()),
-(-34.6165768, -58.3699136, 'Calle San Lorenzo', 'Sobre San Lorenzo, a un cuarto de cuadra de Balcarce', NOW()),
-(-34.6165768, -58.3699508, 'Calle San Lorenzo', 'Sobre San Lorenzo, frente a entrada de garage', NOW()),
-(-34.6165800, -58.3699790, 'Calle San Lorenzo', 'Sobre San Lorenzo, cerca del árbol de la vereda', NOW()),
-(-34.6165821, -58.3700085, 'Calle San Lorenzo', 'Sobre San Lorenzo, a metros de la esquina de Balcarce', NOW()),
-(-34.6165800, -58.3700406, 'Calle San Lorenzo', 'Sobre San Lorenzo, junto a la esquina de Balcarce', NOW()),
-(-34.6165831, -58.3700727, 'Calle San Lorenzo', 'Esquina con Balcarce', NOW());
+(-34.6185806, -58.3701578, 'Balcarce 914', 'Adelante de Cafe Rivas', NOW()),
+(-34.6177018, -58.367353, 'Azopardo 864', 'En frente del grafiti de Evita', NOW()),
+(-34.618262, -58.368300, 'Estados Unidos 188', 'Al lado del Ministerio', NOW()),
+(-34.6156932,-58.3678308, 'Chile 160', 'En frente al Diario La Prensa', NOW());
 
 INSERT INTO reportes (spot_id, estado_reportado, fecha_creacion, fecha_expiracion, veces_libre, veces_ocupado) VALUES
 (1, 'libre', NOW(), NOW() + INTERVAL '3 hours', 3, 1),
-
 (2, 'ocupado', NOW(), NOW() + INTERVAL '3 hours', 0, 2),
-
 (3, 'libre', NOW(), NOW() + INTERVAL '3 hours', 1, 0);
 
 INSERT INTO restricciones (spot_id, tipo, dia_semana, hora_inicio, hora_fin, descripcion) VALUES
@@ -32,9 +17,7 @@ INSERT INTO restricciones (spot_id, tipo, dia_semana, hora_inicio, hora_fin, des
 (1, 'carga_descarga', 1, '06:00:00', '09:00:00', 'Exclusivo carga y descarga de 6 a 9 hs días hábiles.'),
 (1, 'carga_descarga', 2, '06:00:00', '09:00:00', 'Exclusivo carga y descarga de 6 a 9 hs días hábiles.'),
 (1, 'carga_descarga', 3, '06:00:00', '09:00:00', 'Exclusivo carga y descarga de 6 a 9 hs días hábiles.'),
-
 (3, 'prohibido_estacionar', 1, '07:00:00', '21:00:00', 'Prohibido estacionar días hábiles de 7 a 21 hs (Normativa Avenidas CABA).'),
 (3, 'prohibido_estacionar', 2, '07:00:00', '21:00:00', 'Prohibido estacionar días hábiles de 7 a 21 hs (Normativa Avenidas CABA).'),
-(3, 'prohibido_estacionar', 3, '07:00:00', '21:00:00', 'Prohibido estacionar días hábiles de 7 a 21 hs (Normativa Avenidas CABA).'),
-(3, 'prohibido_estacionar', 4, '07:00:00', '21:00:00', 'Prohibido estacionar días hábiles de 7 a 21 hs (Normativa Avenidas CABA).'),
-(3, 'prohibido_estacionar', 5, '07:00:00', '21:00:00', 'Prohibido estacionar días hábiles de 7 a 21 hs (Normativa Avenidas CABA).');
+(3, 'prohibido_estacionar', 5, '07:00:00', '21:00:00', 'Prohibido estacionar días hábiles de 7 a 21 hs (Normativa Avenidas CABA).'),
+(4, 'prohibido_estacionar', 6, '07:00:00', '23:59:59', 'Prohibido estacionar los sabados de 7 a 23:59 hs.');
