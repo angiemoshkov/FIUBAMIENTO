@@ -11,13 +11,21 @@ export async function getReportesBySpot(spot_id) {
   return res.rows;
 }
 
-export async function getAllReportes() {
+export async function getAllReportes(dia_semana, hora) {
   const res = await db.query(
     `SELECT r.id, r.spot_id, s.direccion_aproximada, r.estado_reportado,
-            r.fecha_creacion, r.fecha_expiracion, r.veces_libre, r.veces_ocupado
+            r.fecha_creacion, r.fecha_expiracion, r.veces_libre, r.veces_ocupado,
+            r.fecha_expiracion > NOW() AS vigente,
+
+     (SELECT COUNT(*) FROM restricciones rest
+        WHERE rest.spot_id = r.spot_id
+        AND rest.dia_semana = $1
+        AND $2 BETWEEN rest.hora_inicio AND rest.hora_fin
+      ) AS restricciones_activas
+
      FROM reportes r
      JOIN spots s ON s.id = r.spot_id
-     ORDER BY r.fecha_creacion DESC`
+     ORDER BY r.spot_id, r.fecha_creacion DESC`, [dia_semana, hora]
   );
   return res.rows;
 }

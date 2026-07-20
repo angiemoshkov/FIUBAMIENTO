@@ -11,7 +11,22 @@ endpointsReportes.get("/", async (req, res) => {
     return res.json(reportes);
   }
 
-  const reportes = await getAllReportes();
+  let dia_semana = new Date().getDay();
+  if (dia_semana === 0)
+      dia_semana = 7;
+  const hora = new Date().toTimeString().slice(0, 8);
+
+  const reportes = await getAllReportes(dia_semana, hora);
+  
+  for (const reporte of reportes) {
+    if (reporte.restricciones_activas > 0)
+      reporte.estado_actual = 'restringido';
+    else if (!reporte.vigente)
+      reporte.estado_actual = 'sin_informacion_reciente';
+    else
+      reporte.estado_actual = reporte.estado_reportado;
+  }
+
   res.json(reportes);
 });
 
