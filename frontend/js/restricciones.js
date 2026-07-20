@@ -1,41 +1,61 @@
 const URL_API = 'http://localhost:3000/api/v1/restricciones';
+const URL_SPOTS = 'http://localhost:3000/api/v1/spots';
 
-async function buscarRestricciones() {
-    const spot_id = document.getElementById('spot-id-input').value;
+// Al cargar la página, leemos el spot_id de la URL
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const spot_id = params.get('spot_id');
+
     if (!spot_id) {
-        alert('Ingresá un Spot ID');
+        document.getElementById('body-restricciones').innerHTML = 
+            '<tr><td colspan="7">Error: no se especificó un spot.</td></tr>';
         return;
     }
-    const response = await fetch(`${URL_API}?spot_id=${spot_id}`);
-    if (!response.ok) {
-        const data = await response.json();
-        alert(data.error);
-        return;
+
+    document.getElementById('form-spot-id').value = spot_id;
+    cargarRestriccionesYDireccion(spot_id);
+});
+
+async function cargarRestriccionesYDireccion(spot_id) {
+    try {
+        const [resSpot, resRestricciones] = await Promise.all([
+            fetch(`${URL_SPOTS}/${spot_id}`),
+            fetch(`${URL_API}?spot_id=${spot_id}`)
+        ]);
+
+        const spot = await resSpot.json();
+        const restricciones = await resRestricciones.json();
+
+        document.getElementById('titulo-pagina').textContent = 
+            `Restricciones — ${spot.direccion_aproximada}`;
+
+        renderizarTabla(restricciones, spot.direccion_aproximada);
+    } catch (error) {
+        document.getElementById('body-restricciones').innerHTML = 
+            '<tr><td colspan="7">Error al cargar las restricciones.</td></tr>';
     }
-    const restricciones = await response.json();
-    renderizarTabla(restricciones);
 }
 
-function renderizarTabla(restricciones) {
+function renderizarTabla(restricciones, direccion) {
     const tbody = document.getElementById('body-restricciones');
     tbody.innerHTML = '';
 
     if (restricciones.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7">No hay restricciones para este spot</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7">No hay restricciones para este spot.</td></tr>';
         return;
     }
 
     restricciones.forEach(r => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
-            <td>${r.spot_id}</td>
-            <td>${r.tipo_restriccion ?? r.tipo ?? '-'}</td>
+            <td>${direccion}</td>
+            <td>${r.tipo ?? '-'}</td>
             <td>${r.dia_semana}</td>
             <td>${r.hora_inicio}</td>
             <td>${r.hora_fin}</td>
             <td>${r.descripcion ?? '-'}</td>
             <td>
-                <button class="button is-small is-warning" onclick="editarRestriccion(${r.id}, ${r.spot_id}, '${r.tipo_restriccion ?? r.tipo}', ${r.dia_semana}, '${r.hora_inicio}', '${r.hora_fin}', '${r.descripcion ?? ''}')">Editar</button>
+                <button class="button is-small is-warning" onclick="editarRestriccion(${r.id}, '${r.tipo}', ${r.dia_semana}, '${r.hora_inicio}', '${r.hora_fin}', '${r.descripcion ?? ''}')">Editar</button>
                 <button class="button is-small is-danger" onclick="confirmarEliminar(${r.id})">Eliminar</button>
             </td>
         `;
@@ -43,16 +63,25 @@ function renderizarTabla(restricciones) {
     });
 }
 
-function editarRestriccion(id, spot_id, tipo, dia, hora_inicio, hora_fin, descripcion) {
+function mostrarFormulario() {
+    document.getElementById('formulario-restriccion').style.display = 'block';
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
+function ocultarFormulario() {
+    document.getElementById('formulario-restriccion').style.display = 'none';
+    limpiarFormulario();
+}
+
+function editarRestriccion(id, tipo, dia, hora_inicio, hora_fin, descripcion) {
     document.getElementById('restriccion-id').value = id;
-    document.getElementById('form-spot-id').value = spot_id;
     document.getElementById('form-tipo').value = tipo;
     document.getElementById('form-dia').value = dia;
     document.getElementById('form-hora-inicio').value = hora_inicio.slice(0, 5);
     document.getElementById('form-hora-fin').value = hora_fin.slice(0, 5);
     document.getElementById('form-descripcion').value = descripcion;
     document.getElementById('form-titulo').textContent = 'Editar restricción';
-    window.scrollTo(0, document.body.scrollHeight);
+    mostrarFormulario();
 }
 
 async function guardarRestriccion() {
@@ -64,7 +93,7 @@ async function guardarRestriccion() {
     const hora_fin = document.getElementById('form-hora-fin').value;
     const descripcion = document.getElementById('form-descripcion').value;
 
-    if (!spot_id || !tipo || !dia_semana || !hora_inicio || !hora_fin) {
+    if (!tipo || !dia_semana || !hora_inicio || !hora_fin) {
         alert('Completá todos los campos obligatorios');
         return;
     }
@@ -92,8 +121,10 @@ async function guardarRestriccion() {
         return;
     }
 
-    alert("¡Restriccion guardada exitosamente!");
-    limpiarFormulario();
+    alert('¡Restricción guardada!');
+    ocultarFormulario();
+    const spot_id_actual = document.getElementById('form-spot-id').value;
+    cargarRestriccionesYDireccion(spot_id_actual);
 }
 
 let restriccionAEliminarId = null;
@@ -105,17 +136,15 @@ function confirmarEliminar(id) {
 
 async function eliminarRestriccion() {
     if (!restriccionAEliminarId) return;
-
     const response = await fetch(`${URL_API}/${restriccionAEliminarId}`, { method: 'DELETE' });
-
     if (!response.ok) {
         const data = await response.json();
         alert(data.error);
         return;
     }
-   
     cerrarModalConfirmar();
-    buscarRestricciones();
+    const spot_id = document.getElementById('form-spot-id').value;
+    cargarRestriccionesYDireccion(spot_id);
 }
 
 function cerrarModalConfirmar() {
@@ -128,7 +157,6 @@ document.getElementById('btn-cancelar-eliminar').addEventListener('click', cerra
 
 function limpiarFormulario() {
     document.getElementById('restriccion-id').value = '';
-    document.getElementById('form-spot-id').value = '';
     document.getElementById('form-tipo').value = '';
     document.getElementById('form-dia').value = '';
     document.getElementById('form-hora-inicio').value = '';
