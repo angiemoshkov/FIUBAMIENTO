@@ -438,3 +438,7 @@ html, body {
 .modal-card-foot .button.is-danger:hover {
     background-color: #c0392b;
 }
+
+body {
+    font-family: sans-serif;
+}
