@@ -14,7 +14,9 @@ CREATE TABLE reportes (
     fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_expiracion TIMESTAMPTZ NOT NULL,
     veces_libre INT NOT NULL DEFAULT 0,
-    veces_ocupado INT NOT NULL DEFAULT 0
+    veces_ocupado INT NOT NULL DEFAULT 0,
+    estado_anterior VARCHAR(50),
+    fecha_creacion_anterior TIMESTAMPTZ
 );
 
 CREATE TABLE restricciones (

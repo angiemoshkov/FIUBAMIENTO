@@ -83,9 +83,13 @@ endpointsReportes.put("/:id", async (req, res) => {
 endpointsReportes.delete("/:id", async (req, res) => {
   const id = req.params.id;
 
-  const eliminado = await deleteReporte(id);
-  if (!eliminado) {
+  const resultado = await deleteReporte(id);
+  if (!resultado) {
     return res.status(404).json({ error: "Reporte no encontrado, por lo que no se pudo eliminar" });
   }
-  res.json({ mensaje: "Reporte eliminado" });
+  res.json({ 
+    mensaje: resultado.revertido
+    ? "Reporte revertido al estado anterior"
+    : "Reporte eliminado"
+  });
 });

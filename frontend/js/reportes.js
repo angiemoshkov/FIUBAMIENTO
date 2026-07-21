@@ -7,7 +7,10 @@ async function cargarReportes() {
 }
 
 function formatearFecha(fecha) {
-    return new Date(fecha).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(fecha).toLocaleString('es-AR', {
+        day: '2-digit', month: '2-digit', year: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false
+    });
 }
 
 function renderizarTabla(reportes) {
@@ -49,7 +52,12 @@ function confirmarEliminar(id) {
 
 async function eliminarReporte() {
     if (!reporteAEliminarId) return;
-    await fetch(`${URL_REPORTES}/${reporteAEliminarId}`, { method: 'DELETE' });
+    const response = await fetch(`${URL_REPORTES}/${reporteAEliminarId}`, { method: 'DELETE' });
+    if (!response.ok) {
+        const data = await response.json();
+        alert(data.error);
+        return;
+    }
     cerrarModalConfirmar();
     cargarReportes();
 }

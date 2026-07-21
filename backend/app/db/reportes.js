@@ -59,7 +59,9 @@ export async function updateReporte(id, estado_reportado) {
 
   const res = await db.query(
     `UPDATE reportes
-     SET estado_reportado = $2,
+     SET estado_anterior = estado_reportado,
+         fecha_creacion_anterior = fecha_creacion,
+         estado_reportado = $2,
          fecha_creacion   = NOW(),
          fecha_expiracion = NOW() + INTERVAL '3 hours',
          veces_libre   = veces_libre   + $3,
@@ -72,10 +74,35 @@ export async function updateReporte(id, estado_reportado) {
 }
 
 export async function deleteReporte(id) {
-  const res = await db.query(
-    "DELETE FROM reportes WHERE id = $1",
+  const actual = await db.query(
+    "SELECT estado_reportado, estado_anterior FROM reportes WHERE id = $1",
     [id]
   );
-  return res.rowCount === 1;
+  if (actual.rowCount === 0) {
+    return null; 
+  }
+
+  if (actual.rows[0].estado_anterior === null) {
+    await db.query("DELETE FROM reportes WHERE id = $1", [id]);
+    return { revertido: false };
+  }
+
+  const decLibre   = actual.rows[0].estado_reportado === 'libre'   ? 1 : 0;
+  const decOcupado = actual.rows[0].estado_reportado === 'ocupado' ? 1 : 0;
+
+  const res = await db.query(
+    `UPDATE reportes
+     SET estado_reportado = estado_anterior,
+         fecha_creacion   = fecha_creacion_anterior,
+         fecha_expiracion = fecha_creacion_anterior + INTERVAL '3 hours',
+         veces_libre   = veces_libre   - $2,
+         veces_ocupado = veces_ocupado - $3,
+         estado_anterior = NULL,
+         fecha_creacion_anterior = NULL
+     WHERE id = $1
+     RETURNING *`,
+    [id, decLibre, decOcupado]
+  );
+  return { revertido: true, reporte: res.rows[0] };
 }
 
