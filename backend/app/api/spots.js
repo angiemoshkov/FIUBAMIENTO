@@ -5,6 +5,7 @@ import {
   getSpot,
   updateSpot,
   deleteSpot,
+  limpiarDatosDelSpot,
 } from "../db/spots.js";
 
 export const endpointsSpots = Router();
@@ -104,6 +105,16 @@ endpointsSpots.put("/:id", async (req, res) => {
     return res.status(400).json({error: "Referencia debe ser un string y no puede estar vacio"});
   }
 
+  const spotActual = await getSpot(id);
+
+  if (spotActual === undefined) {
+    return res.status(404).json({ error: "Spot no encontrado" });
+  }
+
+  const seMovio =
+    Number(spotActual.latitud) !== Number(req.body.latitud) ||
+    Number(spotActual.longitud) !== Number(req.body.longitud);
+
   const updated = await updateSpot(
     id,
     req.body.latitud,
@@ -116,7 +127,11 @@ endpointsSpots.put("/:id", async (req, res) => {
     return res.status(500).json({ error: "No se pudo actualizar el spot" });
   }
 
-  res.status(200).json({ mensaje: "Spot actualizado" });
+  if (seMovio) {
+    await limpiarDatosDelSpot(id);
+  }
+
+  res.status(200).json({ mensaje: "Spot actualizado", se_movio: seMovio });
 });
 
 

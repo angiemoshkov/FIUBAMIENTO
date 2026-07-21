@@ -1,6 +1,6 @@
-
 const map = L.map('map').setView([-34.6177, -58.3683], 17);
 const spotsLayer = L.layerGroup().addTo(map);
+const URL_SPOTS = 'http://localhost:3000/api/v1/spots';
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -17,11 +17,22 @@ setTimeout(() => { map.invalidateSize(); }, 100);
 // Logica de Crear un Nuevo spot desde la Navbar
 
 let modoCreacionActivo = false;
+let modoMoverActivo = false;
+let spotAEliminar = null;
 let popupCreacionTemporal = null;
+let popupEdicionTemporal = null;
+let spotOriginal = null;
+let spotEnEdicion = null;
 
 document.getElementById('btn-activar-creacion').addEventListener('click', function() {
+    if (modoMoverActivo) {
+        desactivarModoMover();
+        abrirFormularioEdicion();
+        return;
+    }
+
     modoCreacionActivo = !modoCreacionActivo;
-    
+
     if (modoCreacionActivo) {
         this.style.backgroundColor = '#e74c3c'; 
         this.textContent = 'Cancelar Creación';
@@ -48,12 +59,7 @@ function calcularDistanciaMetros(lat1, lon1, lat2, lon2) {
     return radioTierraMetros * c;
 }
 
-map.on('click', function(e) {
-    if (!modoCreacionActivo) return;
-
-    const lat = e.latlng.lat;
-    const lng = e.latlng.lng;
-
+function estaDentroDelRadio(lat, lng) {
     const FACULTAD_LAT = -34.61765;
     const FACULTAD_LNG = -58.36831;
 
@@ -61,9 +67,30 @@ map.on('click', function(e) {
 
     //Si está a MÁS de 300 metros, bloqueamos
     if (distanciaAFacultad > 300) {
-        alert(`Solo está permitido agregar spots dentro del radio de la Facultad de Ingeniería (máximo 300 metros). Estás a ${Math.round(distanciaAFacultad)} metros.`);
-        return; 
+        alert(`Solo está permitido ubicar spots dentro del radio de la Facultad de Ingeniería (máximo 300 metros). Estás a ${Math.round(distanciaAFacultad)} metros.`);
+        return false;
     }
+
+    return true;
+}
+
+map.on('click', function(e) {
+    const lat = e.latlng.lat;
+    const lng = e.latlng.lng;
+
+    if (modoMoverActivo) {
+        if (!estaDentroDelRadio(lat, lng)) return;
+
+        spotEnEdicion.latitud = lat;
+        spotEnEdicion.longitud = lng;
+        desactivarModoMover();
+        abrirFormularioEdicion();
+        return;
+    }
+
+    if (!modoCreacionActivo) return;
+
+    if (!estaDentroDelRadio(lat, lng)) return;
 
     const templateNuevo = document.getElementById('nuevo-spot-template');
     const formulario = templateNuevo.content.cloneNode(true);
@@ -125,6 +152,113 @@ function desactivarModoCreacion() {
     document.getElementById('map').style.cursor = ''; 
 }
 
+function seMovioElSpot() {
+    return Number(spotOriginal.latitud) !== Number(spotEnEdicion.latitud) ||
+           Number(spotOriginal.longitud) !== Number(spotEnEdicion.longitud);
+}
+
+function abrirEdicion(spot) {
+    spotOriginal = { ...spot };
+    spotEnEdicion = { ...spot };
+    abrirFormularioEdicion();
+}
+
+function abrirFormularioEdicion() {
+    const template = document.getElementById('editar-spot-template');
+    const contenedorDiv = document.createElement('div');
+    contenedorDiv.appendChild(template.content.cloneNode(true));
+
+    const inputDireccion = contenedorDiv.querySelector('.edit-direccion');
+    const inputReferencia = contenedorDiv.querySelector('.edit-referencia');
+
+    inputDireccion.value = spotEnEdicion.direccion_aproximada;
+    inputReferencia.value = spotEnEdicion.referencia;
+
+    if (seMovioElSpot()) {
+        contenedorDiv.querySelector('.aviso-movido').style.display = 'block';
+    }
+
+    contenedorDiv.querySelector('.btn-mover').addEventListener('click', function() {
+        spotEnEdicion.direccion_aproximada = inputDireccion.value;
+        spotEnEdicion.referencia = inputReferencia.value;
+        activarModoMover();
+    });
+
+    contenedorDiv.querySelector('.btn-guardar-edicion').addEventListener('click', function() {
+        spotEnEdicion.direccion_aproximada = inputDireccion.value;
+        spotEnEdicion.referencia = inputReferencia.value;
+        guardarEdicion();
+    });
+
+    popupEdicionTemporal = L.popup()
+        .setLatLng([spotEnEdicion.latitud, spotEnEdicion.longitud])
+        .setContent(contenedorDiv)
+        .openOn(map);
+}
+
+function activarModoMover() {
+    map.closePopup(popupEdicionTemporal);
+    modoMoverActivo = true;
+
+    const btnNavbar = document.getElementById('btn-activar-creacion');
+    btnNavbar.style.backgroundColor = '#f39c12';
+    btnNavbar.textContent = 'Cancelar movimiento';
+    document.getElementById('map').style.cursor = 'crosshair';
+}
+
+function desactivarModoMover() {
+    modoMoverActivo = false;
+
+    const btnNavbar = document.getElementById('btn-activar-creacion');
+    btnNavbar.style.backgroundColor = '';
+    btnNavbar.textContent = 'Agregar nuevo Spot';
+    document.getElementById('map').style.cursor = '';
+}
+
+async function guardarEdicion() {
+    const direccion = spotEnEdicion.direccion_aproximada.trim();
+    const referencia = spotEnEdicion.referencia.trim();
+
+    if (!direccion || !referencia) {
+        alert('Ambos campos son obligatorios.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${URL_SPOTS}/${spotEnEdicion.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                latitud: spotEnEdicion.latitud,
+                longitud: spotEnEdicion.longitud,
+                direccion_aproximada: direccion,
+                referencia: referencia
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error desconocido del servidor');
+        }
+
+        const resultado = await response.json();
+
+        map.closePopup(popupEdicionTemporal);
+        spotOriginal = null;
+        spotEnEdicion = null;
+
+        if (resultado.se_movio) {
+            alert('El spot se movió: se borraron sus reportes y restricciones, y quedó sin información reciente.');
+        }
+
+        await cargarSpots();
+
+    } catch (error) {
+        console.error('Error al editar el spot:', error);
+        alert(`No se pudo editar: ${error.message}`);
+    }
+}
+
 async function gestionarReporte(spot, nuevoEstado) {
     const urlBase = 'http://localhost:3000/api/v1/reportes';
 
@@ -177,6 +311,28 @@ async function gestionarReporte(spot, nuevoEstado) {
     }
 }
 
+function confirmarEliminar(id) {
+    spotAEliminar = id;
+    document.getElementById('modal-confirmar').classList.add('is-active');
+}
+
+async function eliminarSpot() {
+    if (!spotAEliminar) return;
+    const response = await fetch(`${URL_SPOTS}/${spotAEliminar}`, { method: 'DELETE'});
+    if (!response.ok) {
+        const data = await response.json();
+        alert(data.error);
+        return;
+    }
+    cerrarModalConfirmar();
+    await cargarSpots();
+}
+
+function cerrarModalConfirmar() {
+    spotAEliminar = null;
+    document.getElementById('modal-confirmar').classList.remove('is-active');
+}
+
 async function cargarSpots() {
     try {
         const responseSpots = await fetch('http://localhost:3000/api/v1/spots');
@@ -214,6 +370,7 @@ async function cargarSpots() {
             const popupContent = template.content.cloneNode(true);
 
             popupContent.querySelector('.popup-direccion').textContent = spot.direccion_aproximada;
+            popupContent.querySelector('.popup-referencia').textContent = spot.referencia;
             popupContent.querySelector('.popup-estado strong').textContent = infoEstado.texto;
             popupContent.querySelector('.btn-maps').href = urlGoogleMaps;
             
@@ -221,6 +378,8 @@ async function cargarSpots() {
 
             const btnOcupado = popupContent.querySelector('.btn-marcar-ocupado');
             const btnLibre = popupContent.querySelector('.btn-marcar-libre');
+            const btnEliminar = popupContent.querySelector('.btn-eliminar');
+            const btnEditar = popupContent.querySelector('.btn-editar');
 
             btnOcupado.addEventListener('click', (e) => {
                 e.preventDefault(); 
@@ -230,6 +389,17 @@ async function cargarSpots() {
             btnLibre.addEventListener('click', (e) => {
                 e.preventDefault();
                 gestionarReporte(spot, 'libre');
+            });
+
+            btnEliminar.addEventListener('click', (e) => {
+                e.preventDefault();
+                confirmarEliminar(spot.id);
+            });
+
+            btnEditar.addEventListener('click', (e) => {
+                e.preventDefault();
+                map.closePopup();
+                abrirEdicion(spot);
             });
 
             const popupDiv = document.createElement('div');
@@ -247,5 +417,8 @@ async function cargarSpots() {
         console.error("Error al cargar o procesar los spots:", error);
     }
 }
+
+document.getElementById('btn-confirmar-eliminar').addEventListener('click', eliminarSpot);
+document.getElementById('btn-cancelar-eliminar').addEventListener('click', cerrarModalConfirmar);
 
 cargarSpots();

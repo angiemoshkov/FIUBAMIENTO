@@ -59,6 +59,11 @@ export async function updateSpot(id, latitud, longitud, direccion_aproximada, re
   return res.rowCount == 1;
 }
 
+export async function limpiarDatosDelSpot(id) {
+  await db.query("DELETE FROM reportes WHERE spot_id = $1", [id]);
+  await db.query("DELETE FROM restricciones WHERE spot_id = $1", [id]);
+}
+
 //DELETE
 export async function deleteSpot(id) {
   const res = await db.query("DELETE FROM spots WHERE id = $1", [id]);
