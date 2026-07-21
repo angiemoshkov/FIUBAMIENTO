@@ -209,7 +209,7 @@ html, body {
 .spot-popup {
     min-width: 230px;
     max-width: 260px;
-    font-family: Arial, sans-serif;
+    font-family: sans-serif;
     color: #333;
 }
 
