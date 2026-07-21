@@ -364,6 +364,7 @@ async function cargarSpots() {
             const popupContent = template.content.cloneNode(true);
 
             popupContent.querySelector('.popup-direccion').textContent = spot.direccion_aproximada;
+            popupContent.querySelector('.popup-referencia').textContent = spot.referencia;
             popupContent.querySelector('.popup-estado strong').textContent = infoEstado.texto;
             popupContent.querySelector('.btn-maps').href = urlGoogleMaps;
             
