@@ -29,7 +29,7 @@
 #btn-activar-creacion {
     position: absolute;
     top: 96px;
-    left: 50%;
+    left: 40%;
     z-index: 1000;
 
     transform: translateX(calc(-100% - 32px));
@@ -61,7 +61,7 @@
 #btn-historial {
     position: absolute;
     top: 96px;
-    left: 50%;
+    left: 60%;
     z-index: 1000;
 
     transform: translateX(32px);
