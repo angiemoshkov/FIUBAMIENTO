@@ -11,7 +11,22 @@ endpointsReportes.get("/", async (req, res) => {
     return res.json(reportes);
   }
 
-  const reportes = await getAllReportes();
+  let dia_semana = new Date().getDay();
+  if (dia_semana === 0)
+      dia_semana = 7;
+  const hora = new Date().toTimeString().slice(0, 8);
+
+  const reportes = await getAllReportes(dia_semana, hora);
+  
+  for (const reporte of reportes) {
+    if (reporte.restricciones_activas > 0)
+      reporte.estado_actual = 'restringido';
+    else if (!reporte.vigente)
+      reporte.estado_actual = 'sin_informacion_reciente';
+    else
+      reporte.estado_actual = reporte.estado_reportado;
+  }
+
   res.json(reportes);
 });
 
@@ -68,9 +83,13 @@ endpointsReportes.put("/:id", async (req, res) => {
 endpointsReportes.delete("/:id", async (req, res) => {
   const id = req.params.id;
 
-  const eliminado = await deleteReporte(id);
-  if (!eliminado) {
+  const resultado = await deleteReporte(id);
+  if (!resultado) {
     return res.status(404).json({ error: "Reporte no encontrado, por lo que no se pudo eliminar" });
   }
-  res.json({ mensaje: "Reporte eliminado" });
+  res.json({ 
+    mensaje: resultado.revertido
+    ? "Reporte revertido al estado anterior"
+    : "Reporte eliminado"
+  });
 });

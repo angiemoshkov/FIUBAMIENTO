@@ -17,7 +17,19 @@ body {
 }
 
 .estado-ocupado {
-    color: #e74c3c; 
+    color: #e74c3c;
+}
+
+.estado-restringido {
+    color: #b7950b;
+}
+
+.estado-sin_informacion_reciente {
+    color: #7f8c8d;
+}
+
+tr.fila-vencida {
+    opacity: 0.5;
 }
 
 td.contador-libre {
