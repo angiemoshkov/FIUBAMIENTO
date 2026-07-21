@@ -2,6 +2,11 @@ const map = L.map('map').setView([-34.6177, -58.3683], 17);
 const spotsLayer = L.layerGroup().addTo(map);
 const URL_SPOTS = 'http://localhost:3000/api/v1/spots';
 
+// Centro (FIUBA) y radio de la zona válida. Se usan para validar y para la máscara del mapa.
+const FACULTAD_LAT = -34.61765;
+const FACULTAD_LNG = -58.36831;
+const RADIO_MAXIMO_METROS = 300;
+
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors'
@@ -11,10 +16,6 @@ const fiubaMarker = L.marker([-34.6177, -58.3683]).addTo(map);
 fiubaMarker.bindPopup("<b>Sede Paseo Colón</b><br>Zonas de estacionamiento alrededor.").openPopup();
 
 setTimeout(() => { map.invalidateSize(); }, 100);
-
-
-
-// Logica de Crear un Nuevo spot desde la Navbar
 
 let modoCreacionActivo = false;
 let modoMoverActivo = false;
@@ -36,12 +37,12 @@ document.getElementById('btn-activar-creacion').addEventListener('click', functi
     if (modoCreacionActivo) {
         this.style.backgroundColor = '#e74c3c'; 
         this.textContent = 'Cancelar Creación';
+        mostrarMascaraZona();
         document.getElementById('map').style.cursor = 'crosshair'; 
     } else {
         desactivarModoCreacion();
     }
 });
-
 
 
 function calcularDistanciaMetros(lat1, lon1, lat2, lon2) {
@@ -60,18 +61,59 @@ function calcularDistanciaMetros(lat1, lon1, lat2, lon2) {
 }
 
 function estaDentroDelRadio(lat, lng) {
-    const FACULTAD_LAT = -34.61765;
-    const FACULTAD_LNG = -58.36831;
-
     const distanciaAFacultad = calcularDistanciaMetros(lat, lng, FACULTAD_LAT, FACULTAD_LNG);
 
-    //Si está a MÁS de 300 metros, bloqueamos
-    if (distanciaAFacultad > 300) {
-        alert(`Solo está permitido ubicar spots dentro del radio de la Facultad de Ingeniería (máximo 300 metros). Estás a ${Math.round(distanciaAFacultad)} metros.`);
+    if (distanciaAFacultad > RADIO_MAXIMO_METROS) {
+        alert(`Solo está permitido ubicar spots dentro del radio de la Facultad de Ingeniería (máximo ${RADIO_MAXIMO_METROS} metros). Estás a ${Math.round(distanciaAFacultad)} metros.`);
         return false;
     }
 
     return true;
+}
+
+function estaSobreUnaCalle(lat, lng) {
+    const TOLERANCIA_METROS = 15;
+
+    for (const [calleLat, calleLng] of puntosCalles) {
+        if (calcularDistanciaMetros(lat, lng, calleLat, calleLng) <= TOLERANCIA_METROS) {
+            return true;
+        }
+    }
+
+    alert('El spot debe estar sobre una calle.');
+    return false;
+}
+
+// Genera los puntos de un círculo de `radioMetros` alrededor de un centro. Convertimos
+// metros a grados con la misma relación del Haversine: ~111320 m por grado de latitud
+// (en longitud se corrige por el coseno de la latitud). `pasos` = cuántos lados tiene el
+// círculo aproximado (más pasos = más redondo).
+function anilloCirculo(centroLat, centroLng, radioMetros, pasos = 72) {
+    const puntos = [];
+    for (let i = 0; i <= pasos; i++) {
+        const angulo = (i / pasos) * 2 * Math.PI;
+        const dLat = (radioMetros / 111320) * Math.cos(angulo);
+        const dLng = (radioMetros / (111320 * Math.cos(centroLat * Math.PI / 180))) * Math.sin(angulo);
+        puntos.push([centroLat + dLat, centroLng + dLng]);
+    }
+    return puntos;
+}
+
+// Máscara oscura que tapa todo el mapa menos el círculo de la zona válida. Es un polígono
+// con dos anillos: el exterior cubre "todo el mundo" y el interior (el círculo) queda como
+// un agujero. interactive:false deja que los clicks pasen al mapa (para poder ubicar el spot).
+const todoElMundo = [[-90, -180], [90, -180], [90, 180], [-90, 180]];
+const mascaraZona = L.polygon(
+    [todoElMundo, anilloCirculo(FACULTAD_LAT, FACULTAD_LNG, RADIO_MAXIMO_METROS)],
+    { stroke: false, fillColor: '#000', fillOpacity: 0.5, interactive: false }
+);
+
+function mostrarMascaraZona() {
+    mascaraZona.addTo(map);
+}
+
+function ocultarMascaraZona() {
+    map.removeLayer(mascaraZona);
 }
 
 map.on('click', function(e) {
@@ -80,6 +122,7 @@ map.on('click', function(e) {
 
     if (modoMoverActivo) {
         if (!estaDentroDelRadio(lat, lng)) return;
+        if (!estaSobreUnaCalle(lat, lng)) return;
 
         spotEnEdicion.latitud = lat;
         spotEnEdicion.longitud = lng;
@@ -91,6 +134,7 @@ map.on('click', function(e) {
     if (!modoCreacionActivo) return;
 
     if (!estaDentroDelRadio(lat, lng)) return;
+    if (!estaSobreUnaCalle(lat, lng)) return;
 
     const templateNuevo = document.getElementById('nuevo-spot-template');
     const formulario = templateNuevo.content.cloneNode(true);
@@ -146,6 +190,7 @@ map.on('click', function(e) {
 
 function desactivarModoCreacion() {
     modoCreacionActivo = false;
+    ocultarMascaraZona();
     const btnNavbar = document.getElementById('btn-activar-creacion');
     btnNavbar.style.backgroundColor = ''; 
     btnNavbar.textContent = 'Agregar nuevo Spot';
@@ -199,6 +244,7 @@ function abrirFormularioEdicion() {
 function activarModoMover() {
     map.closePopup(popupEdicionTemporal);
     modoMoverActivo = true;
+    mostrarMascaraZona();
 
     const btnNavbar = document.getElementById('btn-activar-creacion');
     btnNavbar.style.backgroundColor = '#f39c12';
@@ -208,6 +254,7 @@ function activarModoMover() {
 
 function desactivarModoMover() {
     modoMoverActivo = false;
+    ocultarMascaraZona();
 
     const btnNavbar = document.getElementById('btn-activar-creacion');
     btnNavbar.style.backgroundColor = '';
@@ -362,7 +409,7 @@ async function cargarSpots() {
             console.log(`Dibujando spot ID: ${spot.id} en lat: ${spot.latitud} (${typeof spot.latitud}), lng: ${spot.longitud}`);
 
             const estadoKey = spot.estado || 'sin_informacion_reciente';
-            const infoEstado = configuracionEstados[estadoKey] || configuracionEstados['sin_informacion_reciente'];
+            const infoEstado = configuracionEstados[estadoKey];
 
             const urlRestricciones = `restricciones.html?spot_id=${spot.id}`;
             const urlGoogleMaps = `https://www.google.com/maps/dir/?api=1&destination=${spot.latitud},${spot.longitud}`;
@@ -406,7 +453,7 @@ async function cargarSpots() {
             popupDiv.appendChild(popupContent);
 
             L.circleMarker([spot.latitud, spot.longitud], {
-                radius: 6,
+                radius: 7,
                 fillColor: infoEstado.color,
                 color: "#ffffff",
                 weight: 2,
