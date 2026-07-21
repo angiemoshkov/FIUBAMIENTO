@@ -4,7 +4,6 @@ node_modules/
 
 backend/node_modules/
 
-backend/data/
 __pycache__/
 .venv/
 
