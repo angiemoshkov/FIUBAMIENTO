@@ -10,6 +10,31 @@ import {
 
 export const endpointsSpots = Router();
 
+const FIUBA_LAT = -34.61765;
+const FIUBA_LNG = -58.36831;
+const RADIO_MAXIMO_METROS = 300;
+
+// Distancia en metros entre dos puntos de la Tierra (fórmula de Haversine, matemática JS plana).
+function calcularDistanciaMetros(lat1, lon1, lat2, lon2) {
+  const radioTierraMetros = 6371000;
+
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return radioTierraMetros * c;
+}
+
+function estaDentroDelRadio(lat, lng) {
+  const distancia = calcularDistanciaMetros(Number(lat), Number(lng), FIUBA_LAT, FIUBA_LNG);
+  return distancia <= RADIO_MAXIMO_METROS;
+}
+
 //---CRUD completo, respetando el orden de las siglas"---//
 
 //CREATE
@@ -28,6 +53,10 @@ endpointsSpots.post("/", async (req, res) => {
 
   if (typeof req.body.referencia !== "string" || req.body.referencia.trim() == "") {
     return res.status(400).json({error: "Referencia debe ser un string y no puede estar vacio"});
+  }
+
+  if (!estaDentroDelRadio(req.body.latitud, req.body.longitud)) {
+    return res.status(400).json({ error: "El spot debe estar dentro de los 300 metros de la FIUBA" });
   }
 
   const created = await createSpot(
@@ -103,6 +132,10 @@ endpointsSpots.put("/:id", async (req, res) => {
 
   if (typeof req.body.referencia !== "string" || req.body.referencia.trim() == "") {
     return res.status(400).json({error: "Referencia debe ser un string y no puede estar vacio"});
+  }
+
+  if (!estaDentroDelRadio(req.body.latitud, req.body.longitud)) {
+    return res.status(400).json({ error: "El spot debe estar dentro de los 300 metros de la FIUBA" });
   }
 
   const spotActual = await getSpot(id);
