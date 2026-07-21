@@ -2,6 +2,9 @@
 # sin barra inicial: matchea node_modules/ a cualquier profundidad
 node_modules/
 
+backend/node_modules/
+
+backend/data/
 __pycache__/
 .venv/
 

@@ -10,23 +10,13 @@
     <section class="section">
         <div class="container">
             <a href="index.html" class="button mb-4">← Volver al mapa</a>
-            <h1 class="title">Restricciones de estacionamiento</h1>
-
-            <!-- Búsqueda -->
-            <div class="field has-addons mb-4">
-                <div class="control is-expanded">
-                    <input class="input" type="number" id="spot-id-input" placeholder="Spot ID (ej: 1)">
-                </div>
-                <div class="control">
-                    <button class="button is-primary" onclick="buscarRestricciones()">Buscar</button>
-                </div>
-            </div>
+            <h1 class="title" id="titulo-pagina">Restricciones de estacionamiento</h1>
 
             <!-- Tabla -->
             <table class="table is-fullwidth is-striped mt-4">
                 <thead>
                     <tr>
-                        <th>Spot ID</th>
+                        <th>Dirección</th>
                         <th>Tipo</th>
                         <th>Día</th>
                         <th>Hora inicio</th>
@@ -35,17 +25,18 @@
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="body-restricciones"></tbody>
+                <tbody id="body-restricciones">
+                    <tr><td colspan="7">Cargando restricciones...</td></tr>
+                </tbody>
             </table>
 
-            <!-- Formulario crear/editar -->
-            <div class="box mt-5">
+            <button class="button is-primary mt-3" onclick="mostrarFormulario()">+ Agregar restricción</button>
+
+            <!-- Formulario crear/editar (oculto por defecto) -->
+            <div class="box mt-5" id="formulario-restriccion" style="display:none">
                 <h2 class="subtitle" id="form-titulo">Agregar restricción</h2>
                 <input type="hidden" id="restriccion-id">
-                <div class="field">
-                    <label class="label">Spot ID</label>
-                    <input class="input" type="number" id="form-spot-id" placeholder="Ej: 1">
-                </div>
+                <input type="hidden" id="form-spot-id">
                 <div class="field">
                     <label class="label">Tipo</label>
                     <input class="input" type="text" id="form-tipo" placeholder="Ej: carga_descarga">
@@ -71,7 +62,7 @@
                         <button class="button is-success" onclick="guardarRestriccion()">Guardar</button>
                     </div>
                     <div class="control">
-                        <button class="button is-light" onclick="limpiarFormulario()">Cancelar</button>
+                        <button class="button is-light" onclick="ocultarFormulario()">Cancelar</button>
                     </div>
                 </div>
             </div>

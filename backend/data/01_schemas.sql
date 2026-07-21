@@ -9,7 +9,7 @@ CREATE TABLE spots (
 
 CREATE TABLE reportes (
     id SERIAL PRIMARY KEY,
-    spot_id INT REFERENCES spots(id),
+    spot_id INT REFERENCES spots(id) ON DELETE CASCADE,
     estado_reportado VARCHAR(50) NOT NULL,
     fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_expiracion TIMESTAMPTZ NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE reportes (
 
 CREATE TABLE restricciones (
     id SERIAL PRIMARY KEY,
-    spot_id INT REFERENCES spots(id),
+    spot_id INT REFERENCES spots(id) ON DELETE CASCADE,
     tipo VARCHAR(100) NOT NULL,
     dia_semana INT NOT NULL,
     hora_inicio TIME NOT NULL,
