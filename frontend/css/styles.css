@@ -1,17 +1,21 @@
-#titulo {
-    position: absolute;   
-    top: 20px;            
-    left: 50%;            
-    transform: translateX(-50%); 
-    
-    z-index: 1000;        
-    
-    background-color: rgba(255, 255, 255, 0.95); 
-    padding: 10px 25px;   /* Ajusté un poco el padding lateral */
-    border-radius: 30px;  
+header {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 10px 25px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+#titulo {    
     font-family:Verdana, Geneva, Tahoma, sans-serif;
     
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
     pointer-events: none; /* Evita que la isla estorbe al hacer clic en el mapa... */
 
     display: flex;
@@ -21,19 +25,12 @@
 /* Estilo para el texto dentro de la isla */
 .texto-titulo {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 20px;
     color: #333;
 }
 
 /* Ala izquierda del triángulo: su borde derecho queda a 20px del eje central */
 #btn-activar-creacion {
-    position: absolute;
-    top: 96px;
-    left: 40%;
-    z-index: 1000;
-
-    transform: translateX(calc(-100% - 32px));
-
     padding: 12px 22px;
     border: none;
     background-color: #2ecc71;
@@ -54,18 +51,11 @@
 }
 
 #btn-activar-creacion:active {
-    transform: translateX(calc(-100% - 32px)) scale(0.95);
+    transform: scale(0.95);
 }
 
 /* Ala derecha del triángulo: su borde izquierdo queda a 20px del eje central */
 #btn-historial {
-    position: absolute;
-    top: 96px;
-    left: 60%;
-    z-index: 1000;
-
-    transform: translateX(32px);
-
     padding: 12px 22px;
     background-color: #2c3e50;
     color: white;
@@ -86,7 +76,7 @@
 }
 
 #btn-historial:active {
-    transform: translateX(32px) scale(0.95);
+    transform: scale(0.95);
 }
 
 html, body {
