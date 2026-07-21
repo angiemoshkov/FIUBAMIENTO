@@ -12,10 +12,6 @@ fiubaMarker.bindPopup("<b>Sede Paseo Colón</b><br>Zonas de estacionamiento alre
 
 setTimeout(() => { map.invalidateSize(); }, 100);
 
-
-
-// Logica de Crear un Nuevo spot desde la Navbar
-
 let modoCreacionActivo = false;
 let modoMoverActivo = false;
 let spotAEliminar = null;
@@ -43,7 +39,6 @@ document.getElementById('btn-activar-creacion').addEventListener('click', functi
 });
 
 
-
 function calcularDistanciaMetros(lat1, lon1, lat2, lon2) {
     const radioTierraMetros = 6371000; 
     
@@ -65,7 +60,6 @@ function estaDentroDelRadio(lat, lng) {
 
     const distanciaAFacultad = calcularDistanciaMetros(lat, lng, FACULTAD_LAT, FACULTAD_LNG);
 
-    //Si está a MÁS de 300 metros, bloqueamos
     if (distanciaAFacultad > 300) {
         alert(`Solo está permitido ubicar spots dentro del radio de la Facultad de Ingeniería (máximo 300 metros). Estás a ${Math.round(distanciaAFacultad)} metros.`);
         return false;
@@ -74,12 +68,26 @@ function estaDentroDelRadio(lat, lng) {
     return true;
 }
 
+function estaSobreUnaCalle(lat, lng) {
+    const TOLERANCIA_METROS = 15;
+
+    for (const [calleLat, calleLng] of puntosCalles) {
+        if (calcularDistanciaMetros(lat, lng, calleLat, calleLng) <= TOLERANCIA_METROS) {
+            return true;
+        }
+    }
+
+    alert('El spot debe estar sobre una calle.');
+    return false;
+}
+
 map.on('click', function(e) {
     const lat = e.latlng.lat;
     const lng = e.latlng.lng;
 
     if (modoMoverActivo) {
         if (!estaDentroDelRadio(lat, lng)) return;
+        if (!estaSobreUnaCalle(lat, lng)) return;
 
         spotEnEdicion.latitud = lat;
         spotEnEdicion.longitud = lng;
@@ -91,6 +99,7 @@ map.on('click', function(e) {
     if (!modoCreacionActivo) return;
 
     if (!estaDentroDelRadio(lat, lng)) return;
+    if (!estaSobreUnaCalle(lat, lng)) return;
 
     const templateNuevo = document.getElementById('nuevo-spot-template');
     const formulario = templateNuevo.content.cloneNode(true);

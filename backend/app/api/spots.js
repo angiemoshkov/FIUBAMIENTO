@@ -7,6 +7,7 @@ import {
   deleteSpot,
   limpiarDatosDelSpot,
 } from "../db/spots.js";
+import { puntosCalles } from "../calles.js";
 
 export const endpointsSpots = Router();
 
@@ -14,7 +15,6 @@ const FIUBA_LAT = -34.61765;
 const FIUBA_LNG = -58.36831;
 const RADIO_MAXIMO_METROS = 300;
 
-// Distancia en metros entre dos puntos de la Tierra (fórmula de Haversine, matemática JS plana).
 function calcularDistanciaMetros(lat1, lon1, lat2, lon2) {
   const radioTierraMetros = 6371000;
 
@@ -33,6 +33,19 @@ function calcularDistanciaMetros(lat1, lon1, lat2, lon2) {
 function estaDentroDelRadio(lat, lng) {
   const distancia = calcularDistanciaMetros(Number(lat), Number(lng), FIUBA_LAT, FIUBA_LNG);
   return distancia <= RADIO_MAXIMO_METROS;
+}
+
+const TOLERANCIA_CALLE_METROS = 15;
+
+function estaSobreUnaCalle(lat, lng) {
+  for (const [calleLat, calleLng] of puntosCalles) {
+    const distancia = calcularDistanciaMetros(Number(lat), Number(lng), calleLat, calleLng);
+    
+    if (distancia <= TOLERANCIA_CALLE_METROS) {
+      return true;
+    }
+  }
+  return false;
 }
 
 //---CRUD completo, respetando el orden de las siglas"---//
@@ -57,6 +70,10 @@ endpointsSpots.post("/", async (req, res) => {
 
   if (!estaDentroDelRadio(req.body.latitud, req.body.longitud)) {
     return res.status(400).json({ error: "El spot debe estar dentro de los 300 metros de la FIUBA" });
+  }
+
+  if (!estaSobreUnaCalle(req.body.latitud, req.body.longitud)) {
+    return res.status(400).json({ error: "El spot debe estar sobre una calle" });
   }
 
   const created = await createSpot(
@@ -136,6 +153,10 @@ endpointsSpots.put("/:id", async (req, res) => {
 
   if (!estaDentroDelRadio(req.body.latitud, req.body.longitud)) {
     return res.status(400).json({ error: "El spot debe estar dentro de los 300 metros de la FIUBA" });
+  }
+
+  if (!estaSobreUnaCalle(req.body.latitud, req.body.longitud)) {
+    return res.status(400).json({ error: "El spot debe estar sobre una calle" });
   }
 
   const spotActual = await getSpot(id);
