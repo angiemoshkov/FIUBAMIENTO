@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getReportesBySpot, getAllReportes, getReporteById, createReporte, updateReporte, deleteReporte } from "../db/reportes.js";
+import {getAllReportes, getReporteById, createReporte, updateReporte, deleteReporte } from "../db/reportes.js";
 
 export const endpointsReportes = Router();
 

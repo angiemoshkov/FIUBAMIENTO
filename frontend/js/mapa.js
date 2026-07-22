@@ -2,7 +2,6 @@ const map = L.map('map').setView([-34.6177, -58.3683], 17);
 const spotsLayer = L.layerGroup().addTo(map);
 const URL_SPOTS = 'http://localhost:3000/api/v1/spots';
 
-// Centro (FIUBA) y radio de la zona válida. Se usan para validar y para la máscara del mapa.
 const FACULTAD_LAT = -34.61765;
 const FACULTAD_LNG = -58.36831;
 const RADIO_MAXIMO_METROS = 300;
@@ -166,7 +165,7 @@ map.on('click', function(e) {
         };
 
         try {
-            const response = await fetch('http://localhost:3000/api/v1/spots', {
+            const response = await fetch(`${URL_SPOTS}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(nuevoSpotBody)
@@ -385,7 +384,7 @@ function cerrarModalConfirmar() {
 
 async function cargarSpots() {
     try {
-        const responseSpots = await fetch('http://localhost:3000/api/v1/spots');
+        const responseSpots = await fetch(`${URL_SPOTS}`);
         const spotsDesdeBaseDeDatos = await responseSpots.json();
 
         console.log("Datos recibidos de la API:", spotsDesdeBaseDeDatos);
