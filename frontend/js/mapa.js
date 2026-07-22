@@ -311,7 +311,7 @@ async function gestionarReporte(spot, nuevoEstado) {
 
     // CONDICIÓN 0: Restringido -> no se puede reportar
     if (spot.estado === 'restringido') {
-        alert('⚠️ Este lugar tiene una restricción vigente en este horario. No es posible estacionar aquí ahora.');
+        alert('⚠️ Este lugar tiene una restricción vigente en este horario. No es posible estacionar ahora.');
         return;
     }
 

@@ -1,4 +1,4 @@
-const URL_API = 'http://localhost:3000/api/v1/restricciones';
+const URL_RESTRICCIONES = 'http://localhost:3000/api/v1/restricciones';
 const URL_SPOTS = 'http://localhost:3000/api/v1/spots';
 
 // Al cargar la página, leemos el spot_id de la URL
@@ -20,7 +20,7 @@ async function cargarRestriccionesYDireccion(spot_id) {
     try {
         const [resSpot, resRestricciones] = await Promise.all([
             fetch(`${URL_SPOTS}/${spot_id}`),
-            fetch(`${URL_API}?spot_id=${spot_id}`)
+            fetch(`${URL_RESTRICCIONES}?spot_id=${spot_id}`)
         ]);
 
         const spot = await resSpot.json();
@@ -98,17 +98,22 @@ async function guardarRestriccion() {
         return;
     }
 
+    if (hora_inicio >= hora_fin) {
+        alert("'hora_inicio' debe ser anterior a 'hora_fin'. Una restricción que cruza las 00:00 se carga como dos o más: una hasta las 23:59 y otra desde las 00:00, ya que son 2 dias diferentes o más. Volvé a cargar la restriccion correctamente.");
+        return;
+    }
+
     const body = { spot_id: Number(spot_id), tipo, dia_semana: Number(dia_semana), hora_inicio, hora_fin, descripcion };
 
     let response;
     if (id) {
-        response = await fetch(`${URL_API}/${id}`, {
+        response = await fetch(`${URL_RESTRICCIONES}/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
     } else {
-        response = await fetch(URL_API, {
+        response = await fetch(URL_RESTRICCIONES, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
@@ -136,7 +141,7 @@ function confirmarEliminar(id) {
 
 async function eliminarRestriccion() {
     if (!restriccionAEliminarId) return;
-    const response = await fetch(`${URL_API}/${restriccionAEliminarId}`, { method: 'DELETE' });
+    const response = await fetch(`${URL_RESTRICCIONES}/${restriccionAEliminarId}`, { method: 'DELETE' });
     if (!response.ok) {
         const data = await response.json();
         alert(data.error);

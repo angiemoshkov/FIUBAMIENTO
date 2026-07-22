@@ -28,6 +28,10 @@ endpointsRestricciones.post("/", async (req, res) => {
       return res.status(400).json({ error: "Los campos 'hora_inicio' y 'hora_fin' son obligatorios" });
     }
 
+    if (hora_inicio >= hora_fin) {
+      return res.status(400).json({ error: "'hora_inicio' debe ser anterior a 'hora_fin'. Una restricción que cruza la medianoche se carga como dos: una hasta las 23:59 y otra desde las 00:00" });
+    }
+
     const created = await createRestriccion(
       spot_id,
       tipo,
@@ -85,6 +89,10 @@ endpointsRestricciones.put("/:id", async (req, res) => {
     }
     if (!hora_fin || !hora_inicio)
         return res.status(400).json({error: "Los campos 'hora_inicio' y 'hora_fin' son obligatorios"});
+
+    if (hora_inicio >= hora_fin) {
+      return res.status(400).json({ error: "'hora_inicio' debe ser anterior a 'hora_fin'. Una restricción que cruza la medianoche se carga como dos: una hasta las 23:59 y otra desde las 00:00" });
+    }
 
     const updated = await updateRestriccion(id, tipo, dia_semana, hora_inicio, hora_fin, descripcion);
 
