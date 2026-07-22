@@ -1,5 +1,14 @@
 const URL_RESTRICCIONES = 'http://localhost:3000/api/v1/restricciones';
 const URL_SPOTS = 'http://localhost:3000/api/v1/spots';
+const DIAS = {
+    1: 'Lunes',
+    2: 'Martes',
+    3: 'Miércoles',
+    4: 'Jueves',
+    5: 'Viernes',
+    6: 'Sábado',
+    7: 'Domingo'
+};
 
 // Al cargar la página, leemos el spot_id de la URL
 document.addEventListener('DOMContentLoaded', () => {
@@ -50,7 +59,7 @@ function renderizarTabla(restricciones, direccion) {
         fila.innerHTML = `
             <td>${direccion}</td>
             <td>${r.tipo ?? '-'}</td>
-            <td>${r.dia_semana}</td>
+            <td>${DIAS[r.dia_semana] ?? r.dia_semana}</td>
             <td>${r.hora_inicio}</td>
             <td>${r.hora_fin}</td>
             <td>${r.descripcion ?? '-'}</td>
