@@ -16,7 +16,7 @@ export async function createSpot(latitud, longitud, direccion_aproximada, refere
 //READ
 export async function getAllSpots(dia_semana, hora) {
   const res = await db.query(
-  `SELECT s.id, s.latitud, s.longitud, s.direccion_aproximada, s.referencia,
+  `SELECT s.id, s.latitud, s.longitud, s.direccion_aproximada, s.referencia, s.fecha_registro,
   (SELECT COUNT(*) FROM restricciones r
     WHERE r.spot_id = s.id
     AND r.dia_semana = $1
