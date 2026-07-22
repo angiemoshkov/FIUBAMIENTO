@@ -377,10 +377,6 @@ html, body {
     display: flex;
 }
 
-.modal-background {
-    display: none;
-}
-
 .modal-card {
     background: white;
     border-radius: 12px;
