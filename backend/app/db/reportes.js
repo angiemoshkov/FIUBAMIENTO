@@ -1,16 +1,5 @@
 import { db } from "./pool.js";
 
-export async function getReportesBySpot(spot_id) {
-  const res = await db.query(
-    `SELECT id, spot_id, estado_reportado, fecha_creacion, fecha_expiracion, veces_libre, veces_ocupado
-     FROM reportes
-     WHERE spot_id = $1
-     ORDER BY fecha_creacion DESC`,
-    [spot_id]
-  );
-  return res.rows;
-}
-
 export async function getAllReportes(dia_semana, hora) {
   const res = await db.query(
     `SELECT r.id, r.spot_id, s.direccion_aproximada, r.estado_reportado,
