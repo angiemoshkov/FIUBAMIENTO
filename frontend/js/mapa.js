@@ -422,6 +422,7 @@ async function cargarSpots() {
             popupContent.querySelector('.popup-direccion').textContent = spot.direccion_aproximada;
             popupContent.querySelector('.popup-referencia').textContent = spot.referencia;
             popupContent.querySelector('.popup-estado strong').textContent = infoEstado.texto;
+            popupContent.querySelector('.popup-fecha span').textContent = new Date(spot.fecha_registro).toLocaleDateString('es-AR');
             popupContent.querySelector('.btn-maps').href = urlGoogleMaps;
             
             popupContent.querySelector('.btn-restricciones').href = urlRestricciones;
