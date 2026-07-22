@@ -1,16 +1,9 @@
 import { Router } from "express";
-import { getReportesBySpot, getAllReportes, getReporteById, createReporte, updateReporte, deleteReporte } from "../db/reportes.js";
+import {getAllReportes, getReporteById, createReporte, updateReporte, deleteReporte } from "../db/reportes.js";
 
 export const endpointsReportes = Router();
 
 endpointsReportes.get("/", async (req, res) => {
-  const { spot_id } = req.query;
-
-  if (spot_id) {
-    const reportes = await getReportesBySpot(spot_id);
-    return res.json(reportes);
-  }
-
   let dia_semana = new Date().getDay();
   if (dia_semana === 0)
       dia_semana = 7;
