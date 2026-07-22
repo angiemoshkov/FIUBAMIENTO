@@ -360,6 +360,9 @@ async function gestionarReporte(spot, nuevoEstado) {
 
 function confirmarEliminar(id) {
     spotAEliminar = id;
+
+    map.closePopup();
+
     document.getElementById('modal-confirmar').classList.add('is-active');
 }
 
