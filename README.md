@@ -54,28 +54,35 @@ FIUBAMIENTO/
 │   │   │   ├── restricciones.js
 │   │   │   └── spots.js
 │   │   ├── app.js
+│   │   ├── calles.js
 │   │   ├── package.json
 │   │   └── package-lock.json
 │   ├── data/
 │   │   ├── 01_schemas.sql
 │   │   └── 02_seeds.sql
 │   ├── .dockerignore
-│   ├── docker-compose.yml
 │   └── Dockerfile
 ├── frontend/
 │   ├── css/
 │   │   ├── reportes.css
 │   │   └── styles.css
 │   ├── js/
+│   │   ├── calles.js
 │   │   ├── mapa.js
 │   │   ├── reportes.js
-│   │   ├── restricciones.js
-│   │   └── spots.js
+│   │   └── restricciones.js
 │   ├── index.html
 │   ├── reportes.html
-│   ├── restricciones.html
-│   └── spots.html
+│   └── restricciones.html
+├── docs/
+│   └── screenshots/
+│       ├── Mapa principal con spots.jpeg
+│       ├── Popup de un spot.jpeg
+│       ├── Agregar nuevo spot.jpeg
+│       ├── Historial de reportes.jpeg
+│       └── Restricciones.jpeg
 ├── .gitignore
+├── docker-compose.yml
 └── README.md
 ```
 
@@ -100,7 +107,6 @@ cd FIUBAMIENTO
 2. Entrar a la carpeta del backend y levantar los servicios:
 
 ```bash
-cd backend
 docker compose up --build
 ```
 
@@ -110,7 +116,7 @@ Esto levanta tres servicios:
 |---|---|
 | Frontend | http://localhost:8080 |
 | Backend (API) | http://localhost:3000 |
-| PostgreSQL | localhost:5432 |
+| PostgreSQL | localhost:5433 |
 
 La base de datos se inicializa automáticamente con el schema y los datos de prueba al primer arranque (carpeta `data/`).
 
@@ -121,7 +127,6 @@ La base de datos se inicializa automáticamente con el schema y los datos de pru
 | Página | Descripción |
 |---|---|
 | `index.html` | Mapa principal con los spots y sus estados |
-| `spots.html` | Listado y gestión de spots |
 | `reportes.html` | Historial de reportes por spot |
 | `restricciones.html` | Gestión de restricciones horarias por spot |
 
@@ -171,7 +176,20 @@ Cada spot devuelve un campo `estado` calculado en el backend según estas reglas
 
 ## 🖼️ Capturas de pantalla
 
-*(Agregar capturas del mapa y las páginas de gestión)*
+### Mapa principal
+![Mapa principal con spots](docs/screenshots/Mapa%20principal%20con%20spots.jpeg)
+
+### Popup de un spot
+![Popup de un spot](docs/screenshots/Popup%20de%20un%20spot.jpeg)
+
+### Agregar nuevo spot
+![Agregar nuevo spot](docs/screenshots/Agregar%20nuevo%20spot.jpeg)
+
+### Historial de reportes
+![Historial de reportes](docs/screenshots/Historial%20de%20reportes.jpeg)
+
+### Restricciones
+![Restricciones](docs/screenshots/Restricciones.jpeg)
 
 ---
 
