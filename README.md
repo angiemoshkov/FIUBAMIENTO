@@ -8,7 +8,7 @@ Antes de manejar hasta la zona, cualquier persona puede consultar el mapa y ver 
 
 ## ✨ Funcionalidades
 
-- **Mapa en tiempo casi real** — visualización de lugares de estacionamiento con círculos de colores según su estado actual.
+- **Mapa en tiempo real** — visualización de lugares de estacionamiento con círculos de colores según su estado actual.
 - **Reportes con ciclo de vida** — cualquier usuario puede reportar el estado de un lugar (`libre`, `ocupado`). Los reportes expiran automáticamente a las 3 horas, y el lugar pasa a estado `sin información reciente`.
 - **Restricciones horarias** — cada lugar tiene asociadas las reglas vigentes de la zona (horarios prohibidos, carga y descarga, etc.). El sistema combina la disponibilidad reportada con la restricción horaria actual.
 - **Gestión de reportes** — historial de reportes por spot, con posibilidad de editar y eliminar.
@@ -63,11 +63,11 @@ FIUBAMIENTO/
 │   ├── .dockerignore
 │   └── Dockerfile
 ├── frontend/
+│   ├── calles.js
 │   ├── css/
 │   │   ├── reportes.css
 │   │   └── styles.css
 │   ├── js/
-│   │   ├── calles.js
 │   │   ├── mapa.js
 │   │   ├── reportes.js
 │   │   └── restricciones.js
@@ -104,7 +104,7 @@ git clone git@github.com:angiemoshkov/FIUBAMIENTO.git
 cd FIUBAMIENTO
 ```
 
-2. Entrar a la carpeta del backend y levantar los servicios:
+2. Levantar los servicios desde la raíz del repositorio:
 
 ```bash
 docker compose up --build
@@ -126,7 +126,7 @@ La base de datos se inicializa automáticamente con el schema y los datos de pru
 
 | Página | Descripción |
 |---|---|
-| `index.html` | Mapa principal con los spots y sus estados |
+| `index.html` | Mapa principal con los spots, sus estados y CRUD completo |
 | `reportes.html` | Historial de reportes por spot |
 | `restricciones.html` | Gestión de restricciones horarias por spot |
 
@@ -166,7 +166,7 @@ La base de datos se inicializa automáticamente con el schema y los datos de pru
 
 ### Lógica de estado en `GET /api/v1/spots`
 
-Cada spot devuelve un campo `estado` calculado en el backend según estas reglas, en orden de prioridad:
+Cada spot devuelve un campo `ultimo_estado` calculado en el backend según estas reglas, en orden de prioridad:
 
 1. `restringido` — hay una restricción horaria activa en este momento.
 2. `sin_informacion_reciente` — el último reporte expiró (más de 3 horas sin actividad).
