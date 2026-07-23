@@ -198,7 +198,7 @@ Cada spot devuelve un campo `ultimo_estado` calculado en el backend según estas
 ![el spot se movio](docs/screenshots/el%20spot%20se%20movio.jpeg)
 
 ### Alert de retricción vigente
-![restriccion vigente](docs/screenshots/restriccion%20vigente.jpeg)
+![restriccion vigente](docs/screenshots/retriccion%20vigente.jpeg)
 
 
 ---
